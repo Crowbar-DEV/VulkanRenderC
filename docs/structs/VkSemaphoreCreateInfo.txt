@@ -1,0 +1,32 @@
+VkSemaphoreCreateInfo - Structure specifying parameters of a newly created semaphore
+
+C Specification
+The VkSemaphoreCreateInfo structure is defined as:
+
+typedef struct VkSemaphoreCreateInfo {
+    VkStructureType           sType;
+    const void*               pNext;
+    VkSemaphoreCreateFlags    flags;
+} VkSemaphoreCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is reserved for future use.
+
+Description
+Valid Usage (Implicit)
+VUID-VkSemaphoreCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+
+VUID-VkSemaphoreCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkExportSemaphoreCreateInfo, VkExportSemaphoreWin32HandleInfoKHR, or VkSemaphoreTypeCreateInfo
+
+VUID-VkSemaphoreCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkSemaphoreCreateInfo-flags-zerobitmask
+flags must be 0
+
+See Also

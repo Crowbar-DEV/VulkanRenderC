@@ -1,0 +1,10 @@
+VkCommandBuffer - Opaque handle to a command buffer object
+
+C Specification
+Command buffers are objects used to record commands which can be subsequently submitted to a device queue for execution. There are two levels of command buffers - primary command buffers, which can execute secondary command buffers, and which are submitted to queues, and secondary command buffers, which can be executed by primary command buffers, and which are not directly submitted to queues.
+
+Command buffers are represented by VkCommandBuffer handles:
+
+VK_DEFINE_HANDLE(VkCommandBuffer)
+Description
+See Also

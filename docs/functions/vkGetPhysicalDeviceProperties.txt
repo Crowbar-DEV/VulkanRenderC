@@ -1,0 +1,22 @@
+vkGetPhysicalDeviceProperties - Returns properties of a physical device
+
+C Specification
+To query general properties of physical devices once enumerated, call:
+
+void vkGetPhysicalDeviceProperties(
+    VkPhysicalDevice                            physicalDevice,
+    VkPhysicalDeviceProperties*                 pProperties);
+Parameters
+physicalDevice is the handle to the physical device whose properties will be queried.
+
+pProperties is a pointer to a VkPhysicalDeviceProperties structure in which properties are returned.
+
+Description
+Valid Usage (Implicit)
+VUID-vkGetPhysicalDeviceProperties-physicalDevice-parameter
+physicalDevice must be a valid VkPhysicalDevice handle
+
+VUID-vkGetPhysicalDeviceProperties-pProperties-parameter
+pProperties must be a valid pointer to a VkPhysicalDeviceProperties structure
+
+See Also

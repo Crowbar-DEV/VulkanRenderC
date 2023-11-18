@@ -1,0 +1,42 @@
+VkCommandBufferAllocateInfo - Structure specifying the allocation parameters for command buffer object
+
+C Specification
+The VkCommandBufferAllocateInfo structure is defined as:
+
+typedef struct VkCommandBufferAllocateInfo {
+    VkStructureType         sType;
+    const void*             pNext;
+    VkCommandPool           commandPool;
+    VkCommandBufferLevel    level;
+    uint32_t                commandBufferCount;
+} VkCommandBufferAllocateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+commandPool is the command pool from which the command buffers are allocated.
+
+level is a VkCommandBufferLevel value specifying the command buffer level.
+
+commandBufferCount is the number of command buffers to allocate from the pool.
+
+Description
+Valid Usage
+VUID-VkCommandBufferAllocateInfo-commandBufferCount-00044
+commandBufferCount must be greater than 0
+
+Valid Usage (Implicit)
+VUID-VkCommandBufferAllocateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
+
+VUID-VkCommandBufferAllocateInfo-pNext-pNext
+pNext must be NULL
+
+VUID-VkCommandBufferAllocateInfo-commandPool-parameter
+commandPool must be a valid VkCommandPool handle
+
+VUID-VkCommandBufferAllocateInfo-level-parameter
+level must be a valid VkCommandBufferLevel value
+
+See Also

@@ -1,0 +1,47 @@
+vkCreateFramebuffer - Create a new framebuffer object
+
+C Specification
+To create a framebuffer, call:
+
+VkResult vkCreateFramebuffer(
+    VkDevice                                    device,
+    const VkFramebufferCreateInfo*              pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkFramebuffer*                              pFramebuffer);
+Parameters
+device is the logical device that creates the framebuffer.
+
+pCreateInfo is a pointer to a VkFramebufferCreateInfo structure describing additional information about framebuffer creation.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+pFramebuffer is a pointer to a VkFramebuffer handle in which the resulting framebuffer object is returned.
+
+Description
+Valid Usage
+VUID-vkCreateFramebuffer-pCreateInfo-02777
+If pCreateInfo->flags does not include VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, and attachmentCount is not 0, each element of pCreateInfo->pAttachments must have been created on device
+
+Valid Usage (Implicit)
+VUID-vkCreateFramebuffer-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkCreateFramebuffer-pCreateInfo-parameter
+pCreateInfo must be a valid pointer to a valid VkFramebufferCreateInfo structure
+
+VUID-vkCreateFramebuffer-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateFramebuffer-pFramebuffer-parameter
+pFramebuffer must be a valid pointer to a VkFramebuffer handle
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

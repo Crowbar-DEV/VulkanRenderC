@@ -1,0 +1,10 @@
+VkQueue - Opaque handle to a queue object
+
+C Specification
+Creating a logical device also creates the queues associated with that device. The queues to create are described by a set of VkDeviceQueueCreateInfo structures that are passed to vkCreateDevice in pQueueCreateInfos.
+
+Queues are represented by VkQueue handles:
+
+VK_DEFINE_HANDLE(VkQueue)
+Description
+See Also

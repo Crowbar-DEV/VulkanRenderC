@@ -1,0 +1,47 @@
+vkAllocateCommandBuffers - Allocate command buffers from an existing command pool
+
+C Specification
+To allocate command buffers, call:
+
+VkResult vkAllocateCommandBuffers(
+    VkDevice                                    device,
+    const VkCommandBufferAllocateInfo*          pAllocateInfo,
+    VkCommandBuffer*                            pCommandBuffers);
+Parameters
+device is the logical device that owns the command pool.
+
+pAllocateInfo is a pointer to a VkCommandBufferAllocateInfo structure describing parameters of the allocation.
+
+pCommandBuffers is a pointer to an array of VkCommandBuffer handles in which the resulting command buffer objects are returned. The array must be at least the length specified by the commandBufferCount member of pAllocateInfo. Each allocated command buffer begins in the initial state.
+
+Description
+vkAllocateCommandBuffers can be used to create multiple command buffers. If the creation of any of those command buffers fails, the implementation must destroy all successfully created command buffer objects from this command, set all entries of the pCommandBuffers array to NULL and return the error.
+
+When command buffers are first allocated, they are in the initial state.
+
+Valid Usage (Implicit)
+VUID-vkAllocateCommandBuffers-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkAllocateCommandBuffers-pAllocateInfo-parameter
+pAllocateInfo must be a valid pointer to a valid VkCommandBufferAllocateInfo structure
+
+VUID-vkAllocateCommandBuffers-pCommandBuffers-parameter
+pCommandBuffers must be a valid pointer to an array of pAllocateInfo::commandBufferCount VkCommandBuffer handles
+
+VUID-vkAllocateCommandBuffers-pAllocateInfo
+::commandBufferCount-arraylength The value referenced by pAllocateInfo::commandBufferCount must be greater than 0
+
+Host Synchronization
+Host access to pAllocateInfo::commandPool must be externally synchronized
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

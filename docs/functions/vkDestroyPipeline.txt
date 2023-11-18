@@ -1,0 +1,44 @@
+vkDestroyPipeline - Destroy a pipeline object
+
+C Specification
+To destroy a graphics or compute pipeline, call:
+
+void vkDestroyPipeline(
+    VkDevice                                    device,
+    VkPipeline                                  pipeline,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+device is the logical device that destroys the pipeline.
+
+pipeline is the handle of the pipeline to destroy.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+Description
+Valid Usage
+VUID-vkDestroyPipeline-pipeline-00765
+All submitted commands that refer to pipeline must have completed execution
+
+VUID-vkDestroyPipeline-pipeline-00766
+If VkAllocationCallbacks were provided when pipeline was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroyPipeline-pipeline-00767
+If no VkAllocationCallbacks were provided when pipeline was created, pAllocator must be NULL
+
+Valid Usage (Implicit)
+VUID-vkDestroyPipeline-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkDestroyPipeline-pipeline-parameter
+If pipeline is not VK_NULL_HANDLE, pipeline must be a valid VkPipeline handle
+
+VUID-vkDestroyPipeline-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkDestroyPipeline-pipeline-parent
+If pipeline is a valid handle, it must have been created, allocated, or retrieved from device
+
+Host Synchronization
+Host access to pipeline must be externally synchronized
+
+See Also

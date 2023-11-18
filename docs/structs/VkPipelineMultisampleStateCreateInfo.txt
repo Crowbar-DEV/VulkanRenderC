@@ -1,0 +1,97 @@
+VkPipelineMultisampleStateCreateInfo - Structure specifying parameters of a newly created pipeline multisample state
+
+C Specification
+The VkPipelineMultisampleStateCreateInfo structure is defined as:
+
+typedef struct VkPipelineMultisampleStateCreateInfo {
+    VkStructureType                          sType;
+    const void*                              pNext;
+    VkPipelineMultisampleStateCreateFlags    flags;
+    VkSampleCountFlagBits                    rasterizationSamples;
+    VkBool32                                 sampleShadingEnable;
+    float                                    minSampleShading;
+    const VkSampleMask*                      pSampleMask;
+    VkBool32                                 alphaToCoverageEnable;
+    VkBool32                                 alphaToOneEnable;
+} VkPipelineMultisampleStateCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is reserved for future use.
+
+rasterizationSamples is a VkSampleCountFlagBits specifying the number of samples used in rasterization.
+
+sampleShadingEnable can be used to enable Sample Shading.
+
+minSampleShading specifies a minimum fraction of sample shading if sampleShadingEnable is set to VK_TRUE.
+
+pSampleMask is a bitmask of static coverage information that is ANDed with the coverage information generated during rasterization, as described in Sample Mask.
+
+alphaToCoverageEnable controls whether a temporary coverage value is generated based on the alpha component of the fragment’s first color output as specified in the Multisample Coverage section.
+
+alphaToOneEnable controls whether the alpha component of the fragment’s first color output is replaced with one as described in Multisample Coverage.
+
+Description
+Valid Usage
+VUID-VkPipelineMultisampleStateCreateInfo-sampleShadingEnable-00784
+If the sample rate shading feature is not enabled, sampleShadingEnable must be VK_FALSE
+
+VUID-VkPipelineMultisampleStateCreateInfo-alphaToOneEnable-00785
+If the alpha to one feature is not enabled, alphaToOneEnable must be VK_FALSE
+
+VUID-VkPipelineMultisampleStateCreateInfo-minSampleShading-00786
+minSampleShading must be in the range [0,1]
+
+VUID-VkPipelineMultisampleStateCreateInfo-rasterizationSamples-01415
+If the VK_NV_framebuffer_mixed_samples extension is enabled, and if the subpass has any color attachments and rasterizationSamples is greater than the number of color samples, then sampleShadingEnable must be VK_FALSE
+
+Valid Usage (Implicit)
+VUID-VkPipelineMultisampleStateCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+
+VUID-VkPipelineMultisampleStateCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkPipelineCoverageModulationStateCreateInfoNV, VkPipelineCoverageReductionStateCreateInfoNV, VkPipelineCoverageToColorStateCreateInfoNV, or VkPipelineSampleLocationsStateCreateInfoEXT
+
+VUID-VkPipelineMultisampleStateCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkPipelineMultisampleStateCreateInfo-flags-zerobitmask
+flags must be 0
+
+VUID-VkPipelineMultisampleStateCreateInfo-rasterizationSamples-parameter
+rasterizationSamples must be a valid VkSampleCountFlagBits value
+
+VUID-VkPipelineMultisampleStateCreateInfo-pSampleMask-parameter
+If pSampleMask is not NULL, pSampleMask must be a valid pointer to an array of 
+⌈
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+32
+⌉
+⌈ 
+32
+rasterizationSamples
+​
+ ⌉ VkSampleMask values
+
+See Also

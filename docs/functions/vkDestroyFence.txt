@@ -1,0 +1,44 @@
+vkDestroyFence - Destroy a fence object
+
+C Specification
+To destroy a fence, call:
+
+void vkDestroyFence(
+    VkDevice                                    device,
+    VkFence                                     fence,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+device is the logical device that destroys the fence.
+
+fence is the handle of the fence to destroy.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+Description
+Valid Usage
+VUID-vkDestroyFence-fence-01120
+All queue submission commands that refer to fence must have completed execution
+
+VUID-vkDestroyFence-fence-01121
+If VkAllocationCallbacks were provided when fence was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroyFence-fence-01122
+If no VkAllocationCallbacks were provided when fence was created, pAllocator must be NULL
+
+Valid Usage (Implicit)
+VUID-vkDestroyFence-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkDestroyFence-fence-parameter
+If fence is not VK_NULL_HANDLE, fence must be a valid VkFence handle
+
+VUID-vkDestroyFence-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkDestroyFence-fence-parent
+If fence is a valid handle, it must have been created, allocated, or retrieved from device
+
+Host Synchronization
+Host access to fence must be externally synchronized
+
+See Also

@@ -1,0 +1,47 @@
+vkCreateCommandPool - Create a new command pool object
+
+C Specification
+To create a command pool, call:
+
+VkResult vkCreateCommandPool(
+    VkDevice                                    device,
+    const VkCommandPoolCreateInfo*              pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkCommandPool*                              pCommandPool);
+Parameters
+device is the logical device that creates the command pool.
+
+pCreateInfo is a pointer to a VkCommandPoolCreateInfo structure specifying the state of the command pool object.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+pCommandPool is a pointer to a VkCommandPool handle in which the created pool is returned.
+
+Description
+Valid Usage
+VUID-vkCreateCommandPool-queueFamilyIndex-01937
+pCreateInfo->queueFamilyIndex must be the index of a queue family available in the logical device device.
+
+Valid Usage (Implicit)
+VUID-vkCreateCommandPool-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkCreateCommandPool-pCreateInfo-parameter
+pCreateInfo must be a valid pointer to a valid VkCommandPoolCreateInfo structure
+
+VUID-vkCreateCommandPool-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateCommandPool-pCommandPool-parameter
+pCommandPool must be a valid pointer to a VkCommandPool handle
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

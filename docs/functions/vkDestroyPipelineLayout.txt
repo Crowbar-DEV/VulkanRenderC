@@ -1,0 +1,44 @@
+vkDestroyPipelineLayout - Destroy a pipeline layout object
+
+C Specification
+To destroy a pipeline layout, call:
+
+void vkDestroyPipelineLayout(
+    VkDevice                                    device,
+    VkPipelineLayout                            pipelineLayout,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+device is the logical device that destroys the pipeline layout.
+
+pipelineLayout is the pipeline layout to destroy.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+Description
+Valid Usage
+VUID-vkDestroyPipelineLayout-pipelineLayout-00299
+If VkAllocationCallbacks were provided when pipelineLayout was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroyPipelineLayout-pipelineLayout-00300
+If no VkAllocationCallbacks were provided when pipelineLayout was created, pAllocator must be NULL
+
+VUID-vkDestroyPipelineLayout-pipelineLayout-02004
+pipelineLayout must not have been passed to any vkCmd* command for any command buffers that are still in the recording state when vkDestroyPipelineLayout is called
+
+Valid Usage (Implicit)
+VUID-vkDestroyPipelineLayout-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkDestroyPipelineLayout-pipelineLayout-parameter
+If pipelineLayout is not VK_NULL_HANDLE, pipelineLayout must be a valid VkPipelineLayout handle
+
+VUID-vkDestroyPipelineLayout-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkDestroyPipelineLayout-pipelineLayout-parent
+If pipelineLayout is a valid handle, it must have been created, allocated, or retrieved from device
+
+Host Synchronization
+Host access to pipelineLayout must be externally synchronized
+
+See Also

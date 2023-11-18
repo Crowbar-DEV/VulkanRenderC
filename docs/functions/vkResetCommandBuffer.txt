@@ -1,0 +1,43 @@
+vkResetCommandBuffer - Reset a command buffer to the initial state
+
+C Specification
+To reset command buffers, call:
+
+VkResult vkResetCommandBuffer(
+    VkCommandBuffer                             commandBuffer,
+    VkCommandBufferResetFlags                   flags);
+Parameters
+commandBuffer is the command buffer to reset. The command buffer can be in any state other than pending, and is moved into the initial state.
+
+flags is a bitmask of VkCommandBufferResetFlagBits controlling the reset operation.
+
+Description
+Any primary command buffer that is in the recording or executable state and has commandBuffer recorded into it, becomes invalid.
+
+Valid Usage
+VUID-vkResetCommandBuffer-commandBuffer-00045
+commandBuffer must not be in the pending state
+
+VUID-vkResetCommandBuffer-commandBuffer-00046
+commandBuffer must have been allocated from a pool that was created with the VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+
+Valid Usage (Implicit)
+VUID-vkResetCommandBuffer-commandBuffer-parameter
+commandBuffer must be a valid VkCommandBuffer handle
+
+VUID-vkResetCommandBuffer-flags-parameter
+flags must be a valid combination of VkCommandBufferResetFlagBits values
+
+Host Synchronization
+Host access to commandBuffer must be externally synchronized
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

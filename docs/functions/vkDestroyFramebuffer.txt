@@ -1,0 +1,44 @@
+vkDestroyFramebuffer - Destroy a framebuffer object
+
+C Specification
+To destroy a framebuffer, call:
+
+void vkDestroyFramebuffer(
+    VkDevice                                    device,
+    VkFramebuffer                               framebuffer,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+device is the logical device that destroys the framebuffer.
+
+framebuffer is the handle of the framebuffer to destroy.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+Description
+Valid Usage
+VUID-vkDestroyFramebuffer-framebuffer-00892
+All submitted commands that refer to framebuffer must have completed execution
+
+VUID-vkDestroyFramebuffer-framebuffer-00893
+If VkAllocationCallbacks were provided when framebuffer was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroyFramebuffer-framebuffer-00894
+If no VkAllocationCallbacks were provided when framebuffer was created, pAllocator must be NULL
+
+Valid Usage (Implicit)
+VUID-vkDestroyFramebuffer-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkDestroyFramebuffer-framebuffer-parameter
+If framebuffer is not VK_NULL_HANDLE, framebuffer must be a valid VkFramebuffer handle
+
+VUID-vkDestroyFramebuffer-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkDestroyFramebuffer-framebuffer-parent
+If framebuffer is a valid handle, it must have been created, allocated, or retrieved from device
+
+Host Synchronization
+Host access to framebuffer must be externally synchronized
+
+See Also

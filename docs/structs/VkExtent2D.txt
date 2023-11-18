@@ -1,0 +1,16 @@
+VkExtent2D - Structure specifying a two-dimensional extent
+
+C Specification
+A two-dimensional extent is defined by the structure:
+
+typedef struct VkExtent2D {
+    uint32_t    width;
+    uint32_t    height;
+} VkExtent2D;
+Members
+width is the width of the extent.
+
+height is the height of the extent.
+
+Description
+See Also

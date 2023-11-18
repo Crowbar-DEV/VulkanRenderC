@@ -1,0 +1,18 @@
+VkClearValue - Structure specifying a clear value
+
+C Specification
+The VkClearValue union is defined as:
+
+typedef union VkClearValue {
+    VkClearColorValue           color;
+    VkClearDepthStencilValue    depthStencil;
+} VkClearValue;
+Members
+color specifies the color image clear values to use when clearing a color image or attachment.
+
+depthStencil specifies the depth and stencil clear values to use when clearing a depth/stencil image or attachment.
+
+Description
+This union is used where part of the API requires either color or depth/stencil clear values, depending on the attachment, and defines the initial clear values in the VkRenderPassBeginInfo structure.
+
+See Also

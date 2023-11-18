@@ -1,0 +1,8 @@
+VkPipelineStageFlags - Bitmask of VkPipelineStageFlagBits
+
+C Specification
+typedef VkFlags VkPipelineStageFlags;
+Description
+VkPipelineStageFlags is a bitmask type for setting a mask of zero or more VkPipelineStageFlagBits.
+
+See Also

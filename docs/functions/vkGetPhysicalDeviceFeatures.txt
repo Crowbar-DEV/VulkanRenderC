@@ -1,0 +1,22 @@
+vkGetPhysicalDeviceFeatures - Reports capabilities of a physical device
+
+C Specification
+To query supported features, call:
+
+void vkGetPhysicalDeviceFeatures(
+    VkPhysicalDevice                            physicalDevice,
+    VkPhysicalDeviceFeatures*                   pFeatures);
+Parameters
+physicalDevice is the physical device from which to query the supported features.
+
+pFeatures is a pointer to a VkPhysicalDeviceFeatures structure in which the physical device features are returned. For each feature, a value of VK_TRUE specifies that the feature is supported on this physical device, and VK_FALSE specifies that the feature is not supported.
+
+Description
+Valid Usage (Implicit)
+VUID-vkGetPhysicalDeviceFeatures-physicalDevice-parameter
+physicalDevice must be a valid VkPhysicalDevice handle
+
+VUID-vkGetPhysicalDeviceFeatures-pFeatures-parameter
+pFeatures must be a valid pointer to a VkPhysicalDeviceFeatures structure
+
+See Also

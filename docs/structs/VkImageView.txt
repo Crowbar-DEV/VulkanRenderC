@@ -1,0 +1,10 @@
+VkImageView - Opaque handle to an image view object
+
+C Specification
+Image objects are not directly accessed by pipeline shaders for reading or writing image data. Instead, image views representing contiguous ranges of the image subresources and containing additional metadata are used for that purpose. Views must be created on images of compatible types, and must represent a valid subset of image subresources.
+
+Image views are represented by VkImageView handles:
+
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkImageView)
+Description
+See Also

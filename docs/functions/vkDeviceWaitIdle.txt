@@ -1,0 +1,32 @@
+vkDeviceWaitIdle - Wait for a device to become idle
+
+C Specification
+To wait on the host for the completion of outstanding queue operations for all queues on a given logical device, call:
+
+VkResult vkDeviceWaitIdle(
+    VkDevice                                    device);
+Parameters
+device is the logical device to idle.
+
+Description
+vkDeviceWaitIdle is equivalent to calling vkQueueWaitIdle for all queues owned by device.
+
+Valid Usage (Implicit)
+VUID-vkDeviceWaitIdle-device-parameter
+device must be a valid VkDevice handle
+
+Host Synchronization
+Host access to all VkQueue objects created from device must be externally synchronized
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_DEVICE_LOST
+
+See Also

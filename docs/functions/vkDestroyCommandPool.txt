@@ -1,0 +1,48 @@
+vkDestroyCommandPool - Destroy a command pool object
+
+C Specification
+To destroy a command pool, call:
+
+void vkDestroyCommandPool(
+    VkDevice                                    device,
+    VkCommandPool                               commandPool,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+device is the logical device that destroys the command pool.
+
+commandPool is the handle of the command pool to destroy.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+Description
+When a pool is destroyed, all command buffers allocated from the pool are freed.
+
+Any primary command buffer allocated from another VkCommandPool that is in the recording or executable state and has a secondary command buffer allocated from commandPool recorded into it, becomes invalid.
+
+Valid Usage
+VUID-vkDestroyCommandPool-commandPool-00041
+All VkCommandBuffer objects allocated from commandPool must not be in the pending state.
+
+VUID-vkDestroyCommandPool-commandPool-00042
+If VkAllocationCallbacks were provided when commandPool was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroyCommandPool-commandPool-00043
+If no VkAllocationCallbacks were provided when commandPool was created, pAllocator must be NULL
+
+Valid Usage (Implicit)
+VUID-vkDestroyCommandPool-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkDestroyCommandPool-commandPool-parameter
+If commandPool is not VK_NULL_HANDLE, commandPool must be a valid VkCommandPool handle
+
+VUID-vkDestroyCommandPool-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkDestroyCommandPool-commandPool-parent
+If commandPool is a valid handle, it must have been created, allocated, or retrieved from device
+
+Host Synchronization
+Host access to commandPool must be externally synchronized
+
+See Also

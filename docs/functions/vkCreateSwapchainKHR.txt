@@ -1,0 +1,66 @@
+vkCreateSwapchainKHR - Create a swapchain
+
+C Specification
+To create a swapchain, call:
+
+VkResult vkCreateSwapchainKHR(
+    VkDevice                                    device,
+    const VkSwapchainCreateInfoKHR*             pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkSwapchainKHR*                             pSwapchain);
+Parameters
+device is the device to create the swapchain for.
+
+pCreateInfo is a pointer to a VkSwapchainCreateInfoKHR structure specifying the parameters of the created swapchain.
+
+pAllocator is the allocator used for host memory allocated for the swapchain object when there is no more specific allocator available (see Memory Allocation).
+
+pSwapchain is a pointer to a VkSwapchainKHR handle in which the created swapchain object will be returned.
+
+Description
+If the oldSwapchain parameter of pCreateInfo is a valid swapchain, which has exclusive full-screen access, that access is released from oldSwapchain. If the command succeeds in this case, the newly created swapchain will automatically acquire exclusive full-screen access from oldSwapchain.
+
+Note
+This implicit transfer is intended to avoid exiting and entering full-screen exclusive mode, which may otherwise cause unwanted visual updates to the display.
+
+In some cases, swapchain creation may fail if exclusive full-screen mode is requested for application control, but for some implementation-specific reason exclusive full-screen access is unavailable for the particular combination of parameters provided. If this occurs, VK_ERROR_INITIALIZATION_FAILED will be returned.
+
+Note
+In particular, it will fail if the imageExtent member of pCreateInfo does not match the extents of the monitor. Other reasons for failure may include the app not being set as high-dpi aware, or if the physical device and monitor are not compatible in this mode.
+
+Valid Usage (Implicit)
+VUID-vkCreateSwapchainKHR-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkCreateSwapchainKHR-pCreateInfo-parameter
+pCreateInfo must be a valid pointer to a valid VkSwapchainCreateInfoKHR structure
+
+VUID-vkCreateSwapchainKHR-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateSwapchainKHR-pSwapchain-parameter
+pSwapchain must be a valid pointer to a VkSwapchainKHR handle
+
+Host Synchronization
+Host access to pCreateInfo.surface must be externally synchronized
+
+Host access to pCreateInfo.oldSwapchain must be externally synchronized
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_DEVICE_LOST
+
+VK_ERROR_SURFACE_LOST_KHR
+
+VK_ERROR_NATIVE_WINDOW_IN_USE_KHR
+
+VK_ERROR_INITIALIZATION_FAILED
+
+See Also

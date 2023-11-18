@@ -1,0 +1,52 @@
+vkGetPhysicalDeviceSurfacePresentModesKHR - Query supported presentation modes
+
+C Specification
+To query the supported presentation modes for a surface, call:
+
+VkResult vkGetPhysicalDeviceSurfacePresentModesKHR(
+    VkPhysicalDevice                            physicalDevice,
+    VkSurfaceKHR                                surface,
+    uint32_t*                                   pPresentModeCount,
+    VkPresentModeKHR*                           pPresentModes);
+Parameters
+physicalDevice is the physical device that will be associated with the swapchain to be created, as described for vkCreateSwapchainKHR.
+
+surface is the surface that will be associated with the swapchain.
+
+pPresentModeCount is a pointer to an integer related to the number of presentation modes available or queried, as described below.
+
+pPresentModes is either NULL or a pointer to an array of VkPresentModeKHR values, indicating the supported presentation modes.
+
+Description
+If pPresentModes is NULL, then the number of presentation modes supported for the given surface is returned in pPresentModeCount. Otherwise, pPresentModeCount must point to a variable set by the user to the number of elements in the pPresentModes array, and on return the variable is overwritten with the number of values actually written to pPresentModes. If the value of pPresentModeCount is less than the number of presentation modes supported, at most pPresentModeCount values will be written. If pPresentModeCount is smaller than the number of presentation modes supported for the given surface, VK_INCOMPLETE will be returned instead of VK_SUCCESS to indicate that not all the available values were returned.
+
+Valid Usage (Implicit)
+VUID-vkGetPhysicalDeviceSurfacePresentModesKHR-physicalDevice-parameter
+physicalDevice must be a valid VkPhysicalDevice handle
+
+VUID-vkGetPhysicalDeviceSurfacePresentModesKHR-surface-parameter
+surface must be a valid VkSurfaceKHR handle
+
+VUID-vkGetPhysicalDeviceSurfacePresentModesKHR-pPresentModeCount-parameter
+pPresentModeCount must be a valid pointer to a uint32_t value
+
+VUID-vkGetPhysicalDeviceSurfacePresentModesKHR-pPresentModes-parameter
+If the value referenced by pPresentModeCount is not 0, and pPresentModes is not NULL, pPresentModes must be a valid pointer to an array of pPresentModeCount VkPresentModeKHR values
+
+VUID-vkGetPhysicalDeviceSurfacePresentModesKHR-commonparent
+Both of physicalDevice, and surface must have been created, allocated, or retrieved from the same VkInstance
+
+Return Codes
+Success
+VK_SUCCESS
+
+VK_INCOMPLETE
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_SURFACE_LOST_KHR
+
+See Also

@@ -1,0 +1,46 @@
+vkDestroySurfaceKHR - Destroy a VkSurfaceKHR object
+
+C Specification
+To destroy a VkSurfaceKHR object, call:
+
+void vkDestroySurfaceKHR(
+    VkInstance                                  instance,
+    VkSurfaceKHR                                surface,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+instance is the instance used to create the surface.
+
+surface is the surface to destroy.
+
+pAllocator is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+
+Description
+Destroying a VkSurfaceKHR merely severs the connection between Vulkan and the native surface, and does not imply destroying the native surface, closing a window, or similar behavior.
+
+Valid Usage
+VUID-vkDestroySurfaceKHR-surface-01266
+All VkSwapchainKHR objects created for surface must have been destroyed prior to destroying surface
+
+VUID-vkDestroySurfaceKHR-surface-01267
+If VkAllocationCallbacks were provided when surface was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroySurfaceKHR-surface-01268
+If no VkAllocationCallbacks were provided when surface was created, pAllocator must be NULL
+
+Valid Usage (Implicit)
+VUID-vkDestroySurfaceKHR-instance-parameter
+instance must be a valid VkInstance handle
+
+VUID-vkDestroySurfaceKHR-surface-parameter
+If surface is not VK_NULL_HANDLE, surface must be a valid VkSurfaceKHR handle
+
+VUID-vkDestroySurfaceKHR-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkDestroySurfaceKHR-surface-parent
+If surface is a valid handle, it must have been created, allocated, or retrieved from instance
+
+Host Synchronization
+Host access to surface must be externally synchronized
+
+See Also

@@ -1,0 +1,69 @@
+vkCreateGraphicsPipelines - Create graphics pipelines
+
+C Specification
+To create graphics pipelines, call:
+
+VkResult vkCreateGraphicsPipelines(
+    VkDevice                                    device,
+    VkPipelineCache                             pipelineCache,
+    uint32_t                                    createInfoCount,
+    const VkGraphicsPipelineCreateInfo*         pCreateInfos,
+    const VkAllocationCallbacks*                pAllocator,
+    VkPipeline*                                 pPipelines);
+Parameters
+device is the logical device that creates the graphics pipelines.
+
+pipelineCache is either VK_NULL_HANDLE, indicating that pipeline caching is disabled; or the handle of a valid pipeline cache object, in which case use of that cache is enabled for the duration of the command.
+
+createInfoCount is the length of the pCreateInfos and pPipelines arrays.
+
+pCreateInfos is a pointer to an array of VkGraphicsPipelineCreateInfo structures.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+pPipelines is a pointer to an array of VkPipeline handles in which the resulting graphics pipeline objects are returned.
+
+Description
+The VkGraphicsPipelineCreateInfo structure includes an array of shader create info structures containing all the desired active shader stages, as well as creation info to define all relevant fixed-function stages, and a pipeline layout.
+
+Valid Usage
+VUID-vkCreateGraphicsPipelines-flags-00720
+If the flags member of any element of pCreateInfos contains the VK_PIPELINE_CREATE_DERIVATIVE_BIT flag, and the basePipelineIndex member of that same element is not -1, basePipelineIndex must be less than the index into pCreateInfos that corresponds to that element
+
+VUID-vkCreateGraphicsPipelines-flags-00721
+If the flags member of any element of pCreateInfos contains the VK_PIPELINE_CREATE_DERIVATIVE_BIT flag, the base pipeline must have been created with the VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT flag set
+
+Valid Usage (Implicit)
+VUID-vkCreateGraphicsPipelines-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkCreateGraphicsPipelines-pipelineCache-parameter
+If pipelineCache is not VK_NULL_HANDLE, pipelineCache must be a valid VkPipelineCache handle
+
+VUID-vkCreateGraphicsPipelines-pCreateInfos-parameter
+pCreateInfos must be a valid pointer to an array of createInfoCount valid VkGraphicsPipelineCreateInfo structures
+
+VUID-vkCreateGraphicsPipelines-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateGraphicsPipelines-pPipelines-parameter
+pPipelines must be a valid pointer to an array of createInfoCount VkPipeline handles
+
+VUID-vkCreateGraphicsPipelines-createInfoCount-arraylength
+createInfoCount must be greater than 0
+
+VUID-vkCreateGraphicsPipelines-pipelineCache-parent
+If pipelineCache is a valid handle, it must have been created, allocated, or retrieved from device
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_INVALID_SHADER_NV
+
+See Also

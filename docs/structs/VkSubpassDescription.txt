@@ -1,0 +1,139 @@
+VkSubpassDescription - Structure specifying a subpass description
+
+C Specification
+The VkSubpassDescription structure is defined as:
+
+typedef struct VkSubpassDescription {
+    VkSubpassDescriptionFlags       flags;
+    VkPipelineBindPoint             pipelineBindPoint;
+    uint32_t                        inputAttachmentCount;
+    const VkAttachmentReference*    pInputAttachments;
+    uint32_t                        colorAttachmentCount;
+    const VkAttachmentReference*    pColorAttachments;
+    const VkAttachmentReference*    pResolveAttachments;
+    const VkAttachmentReference*    pDepthStencilAttachment;
+    uint32_t                        preserveAttachmentCount;
+    const uint32_t*                 pPreserveAttachments;
+} VkSubpassDescription;
+Members
+flags is a bitmask of VkSubpassDescriptionFlagBits specifying usage of the subpass.
+
+pipelineBindPoint is a VkPipelineBindPoint value specifying the pipeline type supported for this subpass.
+
+inputAttachmentCount is the number of input attachments.
+
+pInputAttachments is a pointer to an array of VkAttachmentReference structures defining the input attachments for this subpass and their layouts.
+
+colorAttachmentCount is the number of color attachments.
+
+pColorAttachments is a pointer to an array of VkAttachmentReference structures defining the color attachments for this subpass and their layouts.
+
+pResolveAttachments is an optional array of colorAttachmentCount VkAttachmentReference structures defining the resolve attachments for this subpass and their layouts.
+
+pDepthStencilAttachment is a pointer to a VkAttachmentReference structure specifying the depth/stencil attachment for this subpass and its layout.
+
+preserveAttachmentCount is the number of preserved attachments.
+
+pPreserveAttachments is a pointer to an array of preserveAttachmentCount render pass attachment indices identifying attachments that are not used by this subpass, but whose contents must be preserved throughout the subpass.
+
+Description
+Each element of the pInputAttachments array corresponds to an input attachment index in a fragment shader, i.e. if a shader declares an image variable decorated with a InputAttachmentIndex value of X, then it uses the attachment provided in pInputAttachments[X]. Input attachments must also be bound to the pipeline in a descriptor set. If the attachment member of any element of pInputAttachments is VK_ATTACHMENT_UNUSED, the application must not read from the corresponding input attachment index. Fragment shaders can use subpass input variables to access the contents of an input attachment at the fragment’s (x, y, layer) framebuffer coordinates.
+
+Each element of the pColorAttachments array corresponds to an output location in the shader, i.e. if the shader declares an output variable decorated with a Location value of X, then it uses the attachment provided in pColorAttachments[X]. If the attachment member of any element of pColorAttachments is VK_ATTACHMENT_UNUSED, writes to the corresponding location by a fragment are discarded.
+
+If pResolveAttachments is not NULL, each of its elements corresponds to a color attachment (the element in pColorAttachments at the same index), and a multisample resolve operation is defined for each attachment. At the end of each subpass, multisample resolve operations read the subpass’s color attachments, and resolve the samples for each pixel within the render area to the same pixel location in the corresponding resolve attachments, unless the resolve attachment index is VK_ATTACHMENT_UNUSED.
+
+Similarly, if VkSubpassDescriptionDepthStencilResolve::pDepthStencilResolveAttachment is not NULL and does not have the value VK_ATTACHMENT_UNUSED, it corresponds to the depth/stencil attachment in pDepthStencilAttachment, and multisample resolve operations for depth and stencil are defined by VkSubpassDescriptionDepthStencilResolve::depthResolveMode and VkSubpassDescriptionDepthStencilResolve::stencilResolveMode, respectively. At the end of each subpass, multisample resolve operations read the subpass’s depth/stencil attachment, and resolve the samples for each pixel to the same pixel location in the corresponding resolve attachment. If VkSubpassDescriptionDepthStencilResolve::depthResolveMode is VK_RESOLVE_MODE_NONE, then the depth component of the resolve attachment is not written to and its contents are preserved. Similarly, if VkSubpassDescriptionDepthStencilResolve::stencilResolveMode is VK_RESOLVE_MODE_NONE, then the stencil component of the resolve attachment is not written to and its contents are preserved. VkSubpassDescriptionDepthStencilResolve::depthResolveMode is ignored if the VkFormat of the pDepthStencilResolveAttachment does not have a depth component. Similarly, VkSubpassDescriptionDepthStencilResolve::stencilResolveMode is ignored if the VkFormat of the pDepthStencilResolveAttachment does not have a stencil component.
+
+If the image subresource range referenced by the depth/stencil attachment is created with VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT, then the multisample resolve operation uses the sample locations state specified in the sampleLocationsInfo member of the element of the VkRenderPassSampleLocationsBeginInfoEXT::pPostSubpassSampleLocations for the subpass.
+
+If pDepthStencilAttachment is NULL, or if its attachment index is VK_ATTACHMENT_UNUSED, it indicates that no depth/stencil attachment will be used in the subpass.
+
+The contents of an attachment within the render area become undefined at the start of a subpass S if all of the following conditions are true:
+
+The attachment is used as a color, depth/stencil, or resolve attachment in any subpass in the render pass.
+
+There is a subpass S1 that uses or preserves the attachment, and a subpass dependency from S1 to S.
+
+The attachment is not used or preserved in subpass S.
+
+Once the contents of an attachment become undefined in subpass S, they remain undefined for subpasses in subpass dependency chains starting with subpass S until they are written again. However, they remain valid for subpasses in other subpass dependency chains starting with subpass S1 if those subpasses use or preserve the attachment.
+
+Valid Usage
+VUID-VkSubpassDescription-pipelineBindPoint-00844
+pipelineBindPoint must be VK_PIPELINE_BIND_POINT_GRAPHICS
+
+VUID-VkSubpassDescription-colorAttachmentCount-00845
+colorAttachmentCount must be less than or equal to VkPhysicalDeviceLimits::maxColorAttachments
+
+VUID-VkSubpassDescription-loadOp-00846
+If the first use of an attachment in this render pass is as an input attachment, and the attachment is not also used as a color or depth/stencil attachment in the same subpass, then loadOp must not be VK_ATTACHMENT_LOAD_OP_CLEAR
+
+VUID-VkSubpassDescription-pResolveAttachments-00847
+If pResolveAttachments is not NULL, for each resolve attachment that is not VK_ATTACHMENT_UNUSED, the corresponding color attachment must not be VK_ATTACHMENT_UNUSED
+
+VUID-VkSubpassDescription-pResolveAttachments-00848
+If pResolveAttachments is not NULL, for each resolve attachment that is not VK_ATTACHMENT_UNUSED, the corresponding color attachment must not have a sample count of VK_SAMPLE_COUNT_1_BIT
+
+VUID-VkSubpassDescription-pResolveAttachments-00849
+If pResolveAttachments is not NULL, each resolve attachment that is not VK_ATTACHMENT_UNUSED must have a sample count of VK_SAMPLE_COUNT_1_BIT
+
+VUID-VkSubpassDescription-pResolveAttachments-00850
+If pResolveAttachments is not NULL, each resolve attachment that is not VK_ATTACHMENT_UNUSED must have the same VkFormat as its corresponding color attachment
+
+VUID-VkSubpassDescription-pColorAttachments-01417
+All attachments in pColorAttachments that are not VK_ATTACHMENT_UNUSED must have the same sample count
+
+VUID-VkSubpassDescription-pInputAttachments-02647
+All attachments in pInputAttachments that are not VK_ATTACHMENT_UNUSED must have formats whose features contain at least one of VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT or VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT.
+
+VUID-VkSubpassDescription-pColorAttachments-02648
+All attachments in pColorAttachments that are not VK_ATTACHMENT_UNUSED must have formats whose features contain VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
+
+VUID-VkSubpassDescription-pResolveAttachments-02649
+All attachments in pResolveAttachments that are not VK_ATTACHMENT_UNUSED must have formats whose features contain VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT
+
+VUID-VkSubpassDescription-pDepthStencilAttachment-02650
+If pDepthStencilAttachment is not NULL and the attachment is not VK_ATTACHMENT_UNUSED then it must have a format whose features contain VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+
+VUID-VkSubpassDescription-pColorAttachments-01506
+If the VK_AMD_mixed_attachment_samples extension is enabled, and all attachments in pColorAttachments that are not VK_ATTACHMENT_UNUSED must have a sample count that is smaller than or equal to the sample count of pDepthStencilAttachment if it is not VK_ATTACHMENT_UNUSED
+
+VUID-VkSubpassDescription-pDepthStencilAttachment-01418
+If neither the VK_AMD_mixed_attachment_samples nor the VK_NV_framebuffer_mixed_samples extensions are enabled, and if pDepthStencilAttachment is not VK_ATTACHMENT_UNUSED and any attachments in pColorAttachments are not VK_ATTACHMENT_UNUSED, they must have the same sample count
+
+VUID-VkSubpassDescription-attachment-00853
+The attachment member of each element of pPreserveAttachments must not be VK_ATTACHMENT_UNUSED
+
+VUID-VkSubpassDescription-pPreserveAttachments-00854
+Each element of pPreserveAttachments must not also be an element of any other member of the subpass description
+
+VUID-VkSubpassDescription-layout-02519
+If any attachment is used by more than one VkAttachmentReference member, then each use must use the same layout
+
+VUID-VkSubpassDescription-flags-00856
+If flags includes VK_SUBPASS_DESCRIPTION_PER_VIEW_POSITION_X_ONLY_BIT_NVX, it must also include VK_SUBPASS_DESCRIPTION_PER_VIEW_ATTRIBUTES_BIT_NVX.
+
+Valid Usage (Implicit)
+VUID-VkSubpassDescription-flags-parameter
+flags must be a valid combination of VkSubpassDescriptionFlagBits values
+
+VUID-VkSubpassDescription-pipelineBindPoint-parameter
+pipelineBindPoint must be a valid VkPipelineBindPoint value
+
+VUID-VkSubpassDescription-pInputAttachments-parameter
+If inputAttachmentCount is not 0, pInputAttachments must be a valid pointer to an array of inputAttachmentCount valid VkAttachmentReference structures
+
+VUID-VkSubpassDescription-pColorAttachments-parameter
+If colorAttachmentCount is not 0, pColorAttachments must be a valid pointer to an array of colorAttachmentCount valid VkAttachmentReference structures
+
+VUID-VkSubpassDescription-pResolveAttachments-parameter
+If colorAttachmentCount is not 0, and pResolveAttachments is not NULL, pResolveAttachments must be a valid pointer to an array of colorAttachmentCount valid VkAttachmentReference structures
+
+VUID-VkSubpassDescription-pDepthStencilAttachment-parameter
+If pDepthStencilAttachment is not NULL, pDepthStencilAttachment must be a valid pointer to a valid VkAttachmentReference structure
+
+VUID-VkSubpassDescription-pPreserveAttachments-parameter
+If preserveAttachmentCount is not 0, pPreserveAttachments must be a valid pointer to an array of preserveAttachmentCount uint32_t values
+
+See Also

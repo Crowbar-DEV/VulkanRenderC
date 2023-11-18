@@ -1,0 +1,10 @@
+VkShaderModule - Opaque handle to a shader module object
+
+C Specification
+Shader modules contain shader code and one or more entry points. Shaders are selected from a shader module by specifying an entry point as part of pipeline creation. The stages of a pipeline can use shaders that come from different modules. The shader code defining a shader module must be in the SPIR-V format, as described by the Vulkan Environment for SPIR-V appendix.
+
+Shader modules are represented by VkShaderModule handles:
+
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkShaderModule)
+Description
+See Also

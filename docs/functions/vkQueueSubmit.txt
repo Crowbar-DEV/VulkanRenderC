@@ -1,0 +1,121 @@
+vkQueueSubmit - Submits a sequence of semaphores or command buffers to a queue
+
+C Specification
+To submit command buffers to a queue, call:
+
+VkResult vkQueueSubmit(
+    VkQueue                                     queue,
+    uint32_t                                    submitCount,
+    const VkSubmitInfo*                         pSubmits,
+    VkFence                                     fence);
+Parameters
+queue is the queue that the command buffers will be submitted to.
+
+submitCount is the number of elements in the pSubmits array.
+
+pSubmits is a pointer to an array of VkSubmitInfo structures, each specifying a command buffer submission batch.
+
+fence is an optional handle to a fence to be signaled once all submitted command buffers have completed execution. If fence is not VK_NULL_HANDLE, it defines a fence signal operation.
+
+Description
+Note
+Submission can be a high overhead operation, and applications should attempt to batch work together into as few calls to vkQueueSubmit as possible.
+
+vkQueueSubmit is a queue submission command, with each batch defined by an element of pSubmits. Batches begin execution in the order they appear in pSubmits, but may complete out of order.
+
+Fence and semaphore operations submitted with vkQueueSubmit have additional ordering constraints compared to other submission commands, with dependencies involving previous and subsequent queue operations. Information about these additional constraints can be found in the semaphore and fence sections of the synchronization chapter.
+
+Details on the interaction of pWaitDstStageMask with synchronization are described in the semaphore wait operation section of the synchronization chapter.
+
+The order that batches appear in pSubmits is used to determine submission order, and thus all the implicit ordering guarantees that respect it. Other than these implicit ordering guarantees and any explicit synchronization primitives, these batches may overlap or otherwise execute out of order.
+
+If any command buffer submitted to this queue is in the executable state, it is moved to the pending state. Once execution of all submissions of a command buffer complete, it moves from the pending state, back to the executable state. If a command buffer was recorded with the VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT flag, it instead moves to the invalid state.
+
+If vkQueueSubmit fails, it may return VK_ERROR_OUT_OF_HOST_MEMORY or VK_ERROR_OUT_OF_DEVICE_MEMORY. If it does, the implementation must ensure that the state and contents of any resources or synchronization primitives referenced by the submitted command buffers and any semaphores referenced by pSubmits is unaffected by the call or its failure. If vkQueueSubmit fails in such a way that the implementation is unable to make that guarantee, the implementation must return VK_ERROR_DEVICE_LOST. See Lost Device.
+
+Valid Usage
+VUID-vkQueueSubmit-fence-00063
+If fence is not VK_NULL_HANDLE, fence must be unsignaled
+
+VUID-vkQueueSubmit-fence-00064
+If fence is not VK_NULL_HANDLE, fence must not be associated with any other queue command that has not yet completed execution on that queue
+
+VUID-vkQueueSubmit-pCommandBuffers-00065
+Any calls to vkCmdSetEvent, vkCmdResetEvent or vkCmdWaitEvents that have been recorded into any of the command buffer elements of the pCommandBuffers member of any element of pSubmits, must not reference any VkEvent that is referenced by any of those commands in a command buffer that has been submitted to another queue and is still in the pending state
+
+VUID-vkQueueSubmit-pWaitDstStageMask-00066
+Any stage flag included in any element of the pWaitDstStageMask member of any element of pSubmits must be a pipeline stage supported by one of the capabilities of queue, as specified in the table of supported pipeline stages
+
+VUID-vkQueueSubmit-pSignalSemaphores-00067
+Each element of the pSignalSemaphores member of any element of pSubmits must be unsignaled when the semaphore signal operation it defines is executed on the device
+
+VUID-vkQueueSubmit-pWaitSemaphores-00068
+When a semaphore wait operation referring to a binary semaphore defined by any element of the pWaitSemaphores member of any element of pSubmits executes on queue, there must be no other queues waiting on the same semaphore
+
+VUID-vkQueueSubmit-pWaitSemaphores-03238
+All elements of the pWaitSemaphores member of all elements of pSubmits created with a VkSemaphoreType of VK_SEMAPHORE_TYPE_BINARY must reference a semaphore signal operation that has been submitted for execution and any semaphore signal operations on which it depends (if any) must have also been submitted for execution
+
+VUID-vkQueueSubmit-pCommandBuffers-00070
+Each element of the pCommandBuffers member of each element of pSubmits must be in the pending or executable state
+
+VUID-vkQueueSubmit-pCommandBuffers-00071
+If any element of the pCommandBuffers member of any element of pSubmits was not recorded with the VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, it must not be in the pending state
+
+VUID-vkQueueSubmit-pCommandBuffers-00072
+Any secondary command buffers recorded into any element of the pCommandBuffers member of any element of pSubmits must be in the pending or executable state
+
+VUID-vkQueueSubmit-pCommandBuffers-00073
+If any secondary command buffers recorded into any element of the pCommandBuffers member of any element of pSubmits was not recorded with the VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, it must not be in the pending state
+
+VUID-vkQueueSubmit-pCommandBuffers-00074
+Each element of the pCommandBuffers member of each element of pSubmits must have been allocated from a VkCommandPool that was created for the same queue family queue belongs to
+
+VUID-vkQueueSubmit-pSubmits-02207
+If any element of pSubmits->pCommandBuffers includes a Queue Family Transfer Acquire Operation, there must exist a previously submitted Queue Family Transfer Release Operation on a queue in the queue family identified by the acquire operation, with parameters matching the acquire operation as defined in the definition of such acquire operations, and which happens before the acquire operation
+
+VUID-vkQueueSubmit-pCommandBuffers-03220
+If a command recorded into any element of pCommandBuffers was a vkCmdBeginQuery whose queryPool was created with a queryType of VK_QUERY_TYPE_PERFORMANCE_QUERY_KHR, the profiling lock must have been held continuously on the VkDevice that queue was retrieved from, throughout recording of those command buffers
+
+VUID-vkQueueSubmit-pSubmits-02808
+Any resource created with VK_SHARING_MODE_EXCLUSIVE that is read by an operation specified by pSubmits must not be owned by any queue family other than the one which queue belongs to, at the time it is executed
+
+Valid Usage (Implicit)
+VUID-vkQueueSubmit-queue-parameter
+queue must be a valid VkQueue handle
+
+VUID-vkQueueSubmit-pSubmits-parameter
+If submitCount is not 0, pSubmits must be a valid pointer to an array of submitCount valid VkSubmitInfo structures
+
+VUID-vkQueueSubmit-fence-parameter
+If fence is not VK_NULL_HANDLE, fence must be a valid VkFence handle
+
+VUID-vkQueueSubmit-commonparent
+Both of fence, and queue that are valid handles of non-ignored parameters must have been created, allocated, or retrieved from the same VkDevice
+
+Host Synchronization
+Host access to queue must be externally synchronized
+
+Host access to fence must be externally synchronized
+
+Command Properties
+Command Buffer Levels	Render Pass Scope	Supported Queue Types	Pipeline Type
+-
+
+-
+
+Any
+
+-
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_DEVICE_LOST
+
+See Also

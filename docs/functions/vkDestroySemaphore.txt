@@ -1,0 +1,44 @@
+vkDestroySemaphore - Destroy a semaphore object
+
+C Specification
+To destroy a semaphore, call:
+
+void vkDestroySemaphore(
+    VkDevice                                    device,
+    VkSemaphore                                 semaphore,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+device is the logical device that destroys the semaphore.
+
+semaphore is the handle of the semaphore to destroy.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+Description
+Valid Usage
+VUID-vkDestroySemaphore-semaphore-01137
+All submitted batches that refer to semaphore must have completed execution
+
+VUID-vkDestroySemaphore-semaphore-01138
+If VkAllocationCallbacks were provided when semaphore was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroySemaphore-semaphore-01139
+If no VkAllocationCallbacks were provided when semaphore was created, pAllocator must be NULL
+
+Valid Usage (Implicit)
+VUID-vkDestroySemaphore-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkDestroySemaphore-semaphore-parameter
+If semaphore is not VK_NULL_HANDLE, semaphore must be a valid VkSemaphore handle
+
+VUID-vkDestroySemaphore-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkDestroySemaphore-semaphore-parent
+If semaphore is a valid handle, it must have been created, allocated, or retrieved from device
+
+Host Synchronization
+Host access to semaphore must be externally synchronized
+
+See Also

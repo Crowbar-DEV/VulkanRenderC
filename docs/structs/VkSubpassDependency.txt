@@ -1,0 +1,126 @@
+VkSubpassDependency - Structure specifying a subpass dependency
+
+C Specification
+The VkSubpassDependency structure is defined as:
+
+typedef struct VkSubpassDependency {
+    uint32_t                srcSubpass;
+    uint32_t                dstSubpass;
+    VkPipelineStageFlags    srcStageMask;
+    VkPipelineStageFlags    dstStageMask;
+    VkAccessFlags           srcAccessMask;
+    VkAccessFlags           dstAccessMask;
+    VkDependencyFlags       dependencyFlags;
+} VkSubpassDependency;
+Members
+srcSubpass is the subpass index of the first subpass in the dependency, or VK_SUBPASS_EXTERNAL.
+
+dstSubpass is the subpass index of the second subpass in the dependency, or VK_SUBPASS_EXTERNAL.
+
+srcStageMask is a bitmask of VkPipelineStageFlagBits specifying the source stage mask.
+
+dstStageMask is a bitmask of VkPipelineStageFlagBits specifying the destination stage mask
+
+srcAccessMask is a bitmask of VkAccessFlagBits specifying a source access mask.
+
+dstAccessMask is a bitmask of VkAccessFlagBits specifying a destination access mask.
+
+dependencyFlags is a bitmask of VkDependencyFlagBits.
+
+Description
+If srcSubpass is equal to dstSubpass then the VkSubpassDependency describes a subpass self-dependency, and only constrains the pipeline barriers allowed within a subpass instance. Otherwise, when a render pass instance which includes a subpass dependency is submitted to a queue, it defines a memory dependency between the subpasses identified by srcSubpass and dstSubpass.
+
+If srcSubpass is equal to VK_SUBPASS_EXTERNAL, the first synchronization scope includes commands that occur earlier in submission order than the vkCmdBeginRenderPass used to begin the render pass instance. Otherwise, the first set of commands includes all commands submitted as part of the subpass instance identified by srcSubpass and any load, store or multisample resolve operations on attachments used in srcSubpass. In either case, the first synchronization scope is limited to operations on the pipeline stages determined by the source stage mask specified by srcStageMask.
+
+If dstSubpass is equal to VK_SUBPASS_EXTERNAL, the second synchronization scope includes commands that occur later in submission order than the vkCmdEndRenderPass used to end the render pass instance. Otherwise, the second set of commands includes all commands submitted as part of the subpass instance identified by dstSubpass and any load, store or multisample resolve operations on attachments used in dstSubpass. In either case, the second synchronization scope is limited to operations on the pipeline stages determined by the destination stage mask specified by dstStageMask.
+
+The first access scope is limited to access in the pipeline stages determined by the source stage mask specified by srcStageMask. It is also limited to access types in the source access mask specified by srcAccessMask.
+
+The second access scope is limited to access in the pipeline stages determined by the destination stage mask specified by dstStageMask. It is also limited to access types in the destination access mask specified by dstAccessMask.
+
+The availability and visibility operations defined by a subpass dependency affect the execution of image layout transitions within the render pass.
+
+Note
+For non-attachment resources, the memory dependency expressed by subpass dependency is nearly identical to that of a VkMemoryBarrier (with matching srcAccessMask and dstAccessMask parameters) submitted as a part of a vkCmdPipelineBarrier (with matching srcStageMask and dstStageMask parameters). The only difference being that its scopes are limited to the identified subpasses rather than potentially affecting everything before and after.
+
+For attachments however, subpass dependencies work more like a VkImageMemoryBarrier defined similarly to the VkMemoryBarrier above, the queue family indices set to VK_QUEUE_FAMILY_IGNORED, and layouts as follows:
+
+The equivalent to oldLayout is the attachment’s layout according to the subpass description for srcSubpass.
+
+The equivalent to newLayout is the attachment’s layout according to the subpass description for dstSubpass.
+
+Valid Usage
+VUID-VkSubpassDependency-srcStageMask-00860
+If the geometry shaders feature is not enabled, srcStageMask must not contain VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT
+
+VUID-VkSubpassDependency-dstStageMask-00861
+If the geometry shaders feature is not enabled, dstStageMask must not contain VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT
+
+VUID-VkSubpassDependency-srcStageMask-00862
+If the tessellation shaders feature is not enabled, srcStageMask must not contain VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT or VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT
+
+VUID-VkSubpassDependency-dstStageMask-00863
+If the tessellation shaders feature is not enabled, dstStageMask must not contain VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT or VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT
+
+VUID-VkSubpassDependency-srcSubpass-00864
+srcSubpass must be less than or equal to dstSubpass, unless one of them is VK_SUBPASS_EXTERNAL, to avoid cyclic dependencies and ensure a valid execution order
+
+VUID-VkSubpassDependency-srcSubpass-00865
+srcSubpass and dstSubpass must not both be equal to VK_SUBPASS_EXTERNAL
+
+VUID-VkSubpassDependency-srcSubpass-00867
+If srcSubpass is equal to dstSubpass and not all of the stages in srcStageMask and dstStageMask are framebuffer-space stages, the logically latest pipeline stage in srcStageMask must be logically earlier than or equal to the logically earliest pipeline stage in dstStageMask
+
+VUID-VkSubpassDependency-srcAccessMask-00868
+Any access flag included in srcAccessMask must be supported by one of the pipeline stages in srcStageMask, as specified in the table of supported access types
+
+VUID-VkSubpassDependency-dstAccessMask-00869
+Any access flag included in dstAccessMask must be supported by one of the pipeline stages in dstStageMask, as specified in the table of supported access types
+
+VUID-VkSubpassDependency-srcSubpass-02243
+If srcSubpass equals dstSubpass, and srcStageMask and dstStageMask both include a framebuffer-space stage, then dependencyFlags must include VK_DEPENDENCY_BY_REGION_BIT
+
+VUID-VkSubpassDependency-dependencyFlags-02520
+If dependencyFlags includes VK_DEPENDENCY_VIEW_LOCAL_BIT, srcSubpass must not be equal to VK_SUBPASS_EXTERNAL
+
+VUID-VkSubpassDependency-dependencyFlags-02521
+If dependencyFlags includes VK_DEPENDENCY_VIEW_LOCAL_BIT, dstSubpass must not be equal to VK_SUBPASS_EXTERNAL
+
+VUID-VkSubpassDependency-srcSubpass-00872
+If srcSubpass equals dstSubpass and that subpass has more than one bit set in the view mask, then dependencyFlags must include VK_DEPENDENCY_VIEW_LOCAL_BIT
+
+VUID-VkSubpassDependency-srcStageMask-02099
+If the mesh shaders feature is not enabled, srcStageMask must not contain VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV
+
+VUID-VkSubpassDependency-srcStageMask-02100
+If the task shaders feature is not enabled, srcStageMask must not contain VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV
+
+VUID-VkSubpassDependency-dstStageMask-02101
+If the mesh shaders feature is not enabled, dstStageMask must not contain VK_PIPELINE_STAGE_MESH_SHADER_BIT_NV
+
+VUID-VkSubpassDependency-dstStageMask-02102
+If the task shaders feature is not enabled, dstStageMask must not contain VK_PIPELINE_STAGE_TASK_SHADER_BIT_NV
+
+Valid Usage (Implicit)
+VUID-VkSubpassDependency-srcStageMask-parameter
+srcStageMask must be a valid combination of VkPipelineStageFlagBits values
+
+VUID-VkSubpassDependency-srcStageMask-requiredbitmask
+srcStageMask must not be 0
+
+VUID-VkSubpassDependency-dstStageMask-parameter
+dstStageMask must be a valid combination of VkPipelineStageFlagBits values
+
+VUID-VkSubpassDependency-dstStageMask-requiredbitmask
+dstStageMask must not be 0
+
+VUID-VkSubpassDependency-srcAccessMask-parameter
+srcAccessMask must be a valid combination of VkAccessFlagBits values
+
+VUID-VkSubpassDependency-dstAccessMask-parameter
+dstAccessMask must be a valid combination of VkAccessFlagBits values
+
+VUID-VkSubpassDependency-dependencyFlags-parameter
+dependencyFlags must be a valid combination of VkDependencyFlagBits values
+
+See Also

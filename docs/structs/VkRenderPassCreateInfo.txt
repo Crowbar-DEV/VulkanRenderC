@@ -1,0 +1,126 @@
+VkRenderPassCreateInfo - Structure specifying parameters of a newly created render pass
+
+C Specification
+The VkRenderPassCreateInfo structure is defined as:
+
+typedef struct VkRenderPassCreateInfo {
+    VkStructureType                   sType;
+    const void*                       pNext;
+    VkRenderPassCreateFlags           flags;
+    uint32_t                          attachmentCount;
+    const VkAttachmentDescription*    pAttachments;
+    uint32_t                          subpassCount;
+    const VkSubpassDescription*       pSubpasses;
+    uint32_t                          dependencyCount;
+    const VkSubpassDependency*        pDependencies;
+} VkRenderPassCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is reserved for future use.
+
+attachmentCount is the number of attachments used by this render pass.
+
+pAttachments is a pointer to an array of attachmentCount VkAttachmentDescription structures describing the attachments used by the render pass.
+
+subpassCount is the number of subpasses to create.
+
+pSubpasses is a pointer to an array of subpassCount VkSubpassDescription structures describing each subpass.
+
+dependencyCount is the number of memory dependencies between pairs of subpasses.
+
+pDependencies is a pointer to an array of dependencyCount VkSubpassDependency structures describing dependencies between pairs of subpasses.
+
+Description
+Note
+Care should be taken to avoid a data race here; if any subpasses access attachments with overlapping memory locations, and one of those accesses is a write, a subpass dependency needs to be included between them.
+
+Valid Usage
+VUID-VkRenderPassCreateInfo-attachment-00834
+If the attachment member of any element of pInputAttachments, pColorAttachments, pResolveAttachments or pDepthStencilAttachment, or any element of pPreserveAttachments in any element of pSubpasses is not VK_ATTACHMENT_UNUSED, it must be less than attachmentCount
+
+VUID-VkRenderPassCreateInfo-pAttachments-00836
+For any member of pAttachments with a loadOp equal to VK_ATTACHMENT_LOAD_OP_CLEAR, the first use of that attachment must not specify a layout equal to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL or VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL.
+
+VUID-VkRenderPassCreateInfo-pAttachments-02511
+For any member of pAttachments with a stencilLoadOp equal to VK_ATTACHMENT_LOAD_OP_CLEAR, the first use of that attachment must not specify a layout equal to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL or VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL.
+
+VUID-VkRenderPassCreateInfo-pAttachments-01566
+For any member of pAttachments with a loadOp equal to VK_ATTACHMENT_LOAD_OP_CLEAR, the first use of that attachment must not specify a layout equal to VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL.
+
+VUID-VkRenderPassCreateInfo-pAttachments-01567
+For any member of pAttachments with a stencilLoadOp equal to VK_ATTACHMENT_LOAD_OP_CLEAR, the first use of that attachment must not specify a layout equal to VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL.
+
+VUID-VkRenderPassCreateInfo-pNext-01926
+If the pNext chain includes a VkRenderPassInputAttachmentAspectCreateInfo structure, the subpass member of each element of its pAspectReferences member must be less than subpassCount
+
+VUID-VkRenderPassCreateInfo-pNext-01927
+If the pNext chain includes a VkRenderPassInputAttachmentAspectCreateInfo structure, the inputAttachmentIndex member of each element of its pAspectReferences member must be less than the value of inputAttachmentCount in the member of pSubpasses identified by its subpass member
+
+VUID-VkRenderPassCreateInfo-pNext-01963
+If the pNext chain includes a VkRenderPassInputAttachmentAspectCreateInfo structure, for any element of the pInputAttachments member of any element of pSubpasses where the attachment member is not VK_ATTACHMENT_UNUSED, the aspectMask member of the corresponding element of VkRenderPassInputAttachmentAspectCreateInfo::pAspectReferences must only include aspects that are present in images of the format specified by the element of pAttachments at attachment
+
+VUID-VkRenderPassCreateInfo-pNext-01928
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, and its subpassCount member is not zero, that member must be equal to the value of subpassCount
+
+VUID-VkRenderPassCreateInfo-pNext-01929
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, if its dependencyCount member is not zero, it must be equal to dependencyCount
+
+VUID-VkRenderPassCreateInfo-pNext-01930
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, for each non-zero element of pViewOffsets, the srcSubpass and dstSubpass members of pDependencies at the same index must not be equal
+
+VUID-VkRenderPassCreateInfo-pNext-02512
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, for any element of pDependencies with a dependencyFlags member that does not include VK_DEPENDENCY_VIEW_LOCAL_BIT, the corresponding element of the pViewOffsets member of that VkRenderPassMultiviewCreateInfo instance must be 0
+
+VUID-VkRenderPassCreateInfo-pNext-02513
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, elements of its pViewMasks member must either all be 0, or all not be 0
+
+VUID-VkRenderPassCreateInfo-pNext-02514
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, and each element of its pViewMasks member is 0, the dependencyFlags member of each element of pDependencies must not include VK_DEPENDENCY_VIEW_LOCAL_BIT
+
+VUID-VkRenderPassCreateInfo-pNext-02515
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, and each element of its pViewMasks member is 0, correlatedViewMaskCount must be 0
+
+VUID-VkRenderPassCreateInfo-pNext-02516
+If the pNext chain includes a VkRenderPassMultiviewCreateInfo structure, each element of its pViewMask member must not have a bit set at an index greater than or equal to VkPhysicalDeviceLimits::maxFramebufferLayers
+
+VUID-VkRenderPassCreateInfo-pDependencies-00837
+For any element of pDependencies, if the srcSubpass is not VK_SUBPASS_EXTERNAL, all stage flags included in the srcStageMask member of that dependency must be a pipeline stage supported by the pipeline identified by the pipelineBindPoint member of the source subpass
+
+VUID-VkRenderPassCreateInfo-pDependencies-00838
+For any element of pDependencies, if the dstSubpass is not VK_SUBPASS_EXTERNAL, all stage flags included in the dstStageMask member of that dependency must be a pipeline stage supported by the pipeline identified by the pipelineBindPoint member of the destination subpass
+
+VUID-VkRenderPassCreateInfo-srcSubpass-02517
+The srcSubpass member of each element of pDependencies must be less than subpassCount
+
+VUID-VkRenderPassCreateInfo-dstSubpass-02518
+The dstSubpass member of each element of pDependencies must be less than subpassCount
+
+Valid Usage (Implicit)
+VUID-VkRenderPassCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO
+
+VUID-VkRenderPassCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkRenderPassFragmentDensityMapCreateInfoEXT, VkRenderPassInputAttachmentAspectCreateInfo, or VkRenderPassMultiviewCreateInfo
+
+VUID-VkRenderPassCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkRenderPassCreateInfo-flags-zerobitmask
+flags must be 0
+
+VUID-VkRenderPassCreateInfo-pAttachments-parameter
+If attachmentCount is not 0, pAttachments must be a valid pointer to an array of attachmentCount valid VkAttachmentDescription structures
+
+VUID-VkRenderPassCreateInfo-pSubpasses-parameter
+pSubpasses must be a valid pointer to an array of subpassCount valid VkSubpassDescription structures
+
+VUID-VkRenderPassCreateInfo-pDependencies-parameter
+If dependencyCount is not 0, pDependencies must be a valid pointer to an array of dependencyCount valid VkSubpassDependency structures
+
+VUID-VkRenderPassCreateInfo-subpassCount-arraylength
+subpassCount must be greater than 0
+
+See Also

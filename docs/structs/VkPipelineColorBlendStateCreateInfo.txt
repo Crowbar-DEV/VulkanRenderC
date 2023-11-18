@@ -1,0 +1,62 @@
+VkPipelineColorBlendStateCreateInfo - Structure specifying parameters of a newly created pipeline color blend state
+
+C Specification
+The VkPipelineColorBlendStateCreateInfo structure is defined as:
+
+typedef struct VkPipelineColorBlendStateCreateInfo {
+    VkStructureType                               sType;
+    const void*                                   pNext;
+    VkPipelineColorBlendStateCreateFlags          flags;
+    VkBool32                                      logicOpEnable;
+    VkLogicOp                                     logicOp;
+    uint32_t                                      attachmentCount;
+    const VkPipelineColorBlendAttachmentState*    pAttachments;
+    float                                         blendConstants[4];
+} VkPipelineColorBlendStateCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is reserved for future use.
+
+logicOpEnable controls whether to apply Logical Operations.
+
+logicOp selects which logical operation to apply.
+
+attachmentCount is the number of VkPipelineColorBlendAttachmentState elements in pAttachments. This value must equal the colorAttachmentCount for the subpass in which this pipeline is used.
+
+pAttachments: is a pointer to an array of per target attachment states.
+
+blendConstants is a pointer to an array of four values used as the R, G, B, and A components of the blend constant that are used in blending, depending on the blend factor.
+
+Description
+Each element of the pAttachments array is a VkPipelineColorBlendAttachmentState structure specifying per-target blending state for each individual color attachment. If the independent blending feature is not enabled on the device, all VkPipelineColorBlendAttachmentState elements in the pAttachments array must be identical.
+
+Valid Usage
+VUID-VkPipelineColorBlendStateCreateInfo-pAttachments-00605
+If the independent blending feature is not enabled, all elements of pAttachments must be identical
+
+VUID-VkPipelineColorBlendStateCreateInfo-logicOpEnable-00606
+If the logic operations feature is not enabled, logicOpEnable must be VK_FALSE
+
+VUID-VkPipelineColorBlendStateCreateInfo-logicOpEnable-00607
+If logicOpEnable is VK_TRUE, logicOp must be a valid VkLogicOp value
+
+Valid Usage (Implicit)
+VUID-VkPipelineColorBlendStateCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
+
+VUID-VkPipelineColorBlendStateCreateInfo-pNext-pNext
+pNext must be NULL or a pointer to a valid instance of VkPipelineColorBlendAdvancedStateCreateInfoEXT
+
+VUID-VkPipelineColorBlendStateCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkPipelineColorBlendStateCreateInfo-flags-zerobitmask
+flags must be 0
+
+VUID-VkPipelineColorBlendStateCreateInfo-pAttachments-parameter
+If attachmentCount is not 0, pAttachments must be a valid pointer to an array of attachmentCount valid VkPipelineColorBlendAttachmentState structures
+
+See Also

@@ -1,0 +1,43 @@
+vkCreateImageView - Create an image view from an existing image
+
+C Specification
+To create an image view, call:
+
+VkResult vkCreateImageView(
+    VkDevice                                    device,
+    const VkImageViewCreateInfo*                pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkImageView*                                pView);
+Parameters
+device is the logical device that creates the image view.
+
+pCreateInfo is a pointer to a VkImageViewCreateInfo structure containing parameters to be used to create the image view.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+pView is a pointer to a VkImageView handle in which the resulting image view object is returned.
+
+Description
+Valid Usage (Implicit)
+VUID-vkCreateImageView-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkCreateImageView-pCreateInfo-parameter
+pCreateInfo must be a valid pointer to a valid VkImageViewCreateInfo structure
+
+VUID-vkCreateImageView-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateImageView-pView-parameter
+pView must be a valid pointer to a VkImageView handle
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

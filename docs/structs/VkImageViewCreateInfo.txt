@@ -1,0 +1,362 @@
+VkImageViewCreateInfo - Structure specifying parameters of a newly created image view
+
+C Specification
+The VkImageViewCreateInfo structure is defined as:
+
+typedef struct VkImageViewCreateInfo {
+    VkStructureType            sType;
+    const void*                pNext;
+    VkImageViewCreateFlags     flags;
+    VkImage                    image;
+    VkImageViewType            viewType;
+    VkFormat                   format;
+    VkComponentMapping         components;
+    VkImageSubresourceRange    subresourceRange;
+} VkImageViewCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is a bitmask of VkImageViewCreateFlagBits describing additional parameters of the image view.
+
+image is a VkImage on which the view will be created.
+
+viewType is a VkImageViewType value specifying the type of the image view.
+
+format is a VkFormat describing the format and type used to interpret texel blocks in the image.
+
+components is a VkComponentMapping specifies a remapping of color components (or of depth or stencil components after they have been converted into color components).
+
+subresourceRange is a VkImageSubresourceRange selecting the set of mipmap levels and array layers to be accessible to the view.
+
+Description
+Some of the image creation parameters are inherited by the view. In particular, image view creation inherits the implicit parameter usage specifying the allowed usages of the image view that, by default, takes the value of the corresponding usage parameter specified in VkImageCreateInfo at image creation time. If the image was has a depth-stencil format and was created with a VkImageStencilUsageCreateInfo structure included in the pNext chain of VkImageCreateInfo, the usage is calculated based on the subresource.aspectMask provided:
+
+If aspectMask includes only VK_IMAGE_ASPECT_STENCIL_BIT, the implicit usage is equal to VkImageStencilUsageCreateInfo::stencilUsage.
+
+If aspectMask includes only VK_IMAGE_ASPECT_DEPTH_BIT, the implicit usage is equal to VkImageCreateInfo::usage.
+
+If both aspects are included in aspectMask, the implicit usage is equal to the intersection of VkImageCreateInfo::usage and VkImageStencilUsageCreateInfo::stencilUsage. The implicit usage can be overriden by adding a VkImageViewUsageCreateInfo structure to the pNext chain.
+
+If image was created with the VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT flag, and if the format of the image is not multi-planar, format can be different from the image’s format, but if image was created without the VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT flag and they are not equal they must be compatible. Image format compatibility is defined in the Format Compatibility Classes section. Views of compatible formats will have the same mapping between texel coordinates and memory locations irrespective of the format, with only the interpretation of the bit pattern changing.
+
+Note
+Values intended to be used with one view format may not be exactly preserved when written or read through a different format. For example, an integer value that happens to have the bit pattern of a floating point denorm or NaN may be flushed or canonicalized when written or read through a view with a floating point format. Similarly, a value written through a signed normalized format that has a bit pattern exactly equal to -2b may be changed to -2b + 1 as described in Conversion from Normalized Fixed-Point to Floating-Point.
+
+If image was created with the VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT flag, format must be compatible with the image’s format as described above, or must be an uncompressed format in which case it must be size-compatible with the image’s format, as defined for copying data between images In this case the resulting image view’s texel dimensions equal the dimensions of the selected mip level divided by the compressed texel block size and rounded up.
+
+If the image view is to be used with a sampler which supports sampler Y′CBCR conversion, an identically defined object of type VkSamplerYcbcrConversion to that used to create the sampler must be passed to vkCreateImageView in a VkSamplerYcbcrConversionInfo included in the pNext chain of VkImageViewCreateInfo. Conversely, if a VkSamplerYcbcrConversion object is passed to vkCreateImageView, an identically defined VkSamplerYcbcrConversion object must be used when sampling the image.
+
+If the image has a multi-planar format and subresourceRange.aspectMask is VK_IMAGE_ASPECT_COLOR_BIT, format must be identical to the image format, and the sampler to be used with the image view must enable sampler Y′CBCR conversion.
+
+If image was created with the VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT and the image has a multi-planar format, and if subresourceRange.aspectMask is VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, or VK_IMAGE_ASPECT_PLANE_2_BIT, format must be compatible with the corresponding plane of the image, and the sampler to be used with the image view must not enable sampler Y′CBCR conversion. The width and height of the single-plane image view must be derived from the multi-planar image’s dimensions in the manner listed for plane compatibility for the plane.
+
+Any view of an image plane will have the same mapping between texel coordinates and memory locations as used by the channels of the color aspect, subject to the formulae relating texel coordinates to lower-resolution planes as described in Chroma Reconstruction. That is, if an R or B plane has a reduced resolution relative to the G plane of the multi-planar image, the image view operates using the (uplane, vplane) unnormalized coordinates of the reduced-resolution plane, and these coordinates access the same memory locations as the (ucolor, vcolor) unnormalized coordinates of the color aspect for which chroma reconstruction operations operate on the same (uplane, vplane) or (iplane, jplane) coordinates.
+
+Table 7. Image and image view parameter compatibility requirements
+Dim, Arrayed, MS	Image parameters	View parameters
+imageType = ci.imageType
+width = ci.extent.width
+height = ci.extent.height
+depth = ci.extent.depth
+arrayLayers = ci.arrayLayers
+samples = ci.samples
+flags = ci.flags
+where ci is the VkImageCreateInfo used to create image.
+
+baseArrayLayer, layerCount, and levelCount are members of the subresourceRange member.
+
+1D, 0, 0
+
+imageType = VK_IMAGE_TYPE_1D
+width ≥ 1
+height = 1
+depth = 1
+arrayLayers ≥ 1
+samples = 1
+
+viewType = VK_IMAGE_VIEW_TYPE_1D
+baseArrayLayer ≥ 0
+layerCount = 1
+
+1D, 1, 0
+
+imageType = VK_IMAGE_TYPE_1D
+width ≥ 1
+height = 1
+depth = 1
+arrayLayers ≥ 1
+samples = 1
+
+viewType = VK_IMAGE_VIEW_TYPE_1D_ARRAY
+baseArrayLayer ≥ 0
+layerCount ≥ 1
+
+2D, 0, 0
+
+imageType = VK_IMAGE_TYPE_2D
+width ≥ 1
+height ≥ 1
+depth = 1
+arrayLayers ≥ 1
+samples = 1
+
+viewType = VK_IMAGE_VIEW_TYPE_2D
+baseArrayLayer ≥ 0
+layerCount = 1
+
+2D, 1, 0
+
+imageType = VK_IMAGE_TYPE_2D
+width ≥ 1
+height ≥ 1
+depth = 1
+arrayLayers ≥ 1
+samples = 1
+
+viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY
+baseArrayLayer ≥ 0
+layerCount ≥ 1
+
+2D, 0, 1
+
+imageType = VK_IMAGE_TYPE_2D
+width ≥ 1
+height ≥ 1
+depth = 1
+arrayLayers ≥ 1
+samples > 1
+
+viewType = VK_IMAGE_VIEW_TYPE_2D
+baseArrayLayer ≥ 0
+layerCount = 1
+
+2D, 1, 1
+
+imageType = VK_IMAGE_TYPE_2D
+width ≥ 1
+height ≥ 1
+depth = 1
+arrayLayers ≥ 1
+samples > 1
+
+viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY
+baseArrayLayer ≥ 0
+layerCount ≥ 1
+
+CUBE, 0, 0
+
+imageType = VK_IMAGE_TYPE_2D
+width ≥ 1
+height = width
+depth = 1
+arrayLayers ≥ 6
+samples = 1
+flags includes VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT
+
+viewType = VK_IMAGE_VIEW_TYPE_CUBE
+baseArrayLayer ≥ 0
+layerCount = 6
+
+CUBE, 1, 0
+
+imageType = VK_IMAGE_TYPE_2D
+width ≥ 1
+height = width
+depth = 1
+N ≥ 1
+arrayLayers ≥ 6 × N
+samples = 1
+flags includes VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT
+
+viewType = VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+baseArrayLayer ≥ 0
+layerCount = 6 × N, N ≥ 1
+
+3D, 0, 0
+
+imageType = VK_IMAGE_TYPE_3D
+width ≥ 1
+height ≥ 1
+depth ≥ 1
+arrayLayers = 1
+samples = 1
+
+viewType = VK_IMAGE_VIEW_TYPE_3D
+baseArrayLayer = 0
+layerCount = 1
+
+3D, 0, 0
+
+imageType = VK_IMAGE_TYPE_3D
+width ≥ 1
+height ≥ 1
+depth ≥ 1
+arrayLayers = 1
+samples = 1
+flags includes VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT
+flags does not include VK_IMAGE_CREATE_SPARSE_BINDING_BIT, VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT, and VK_IMAGE_CREATE_SPARSE_ALIASED_BIT
+
+viewType = VK_IMAGE_VIEW_TYPE_2D
+levelCount = 1
+baseArrayLayer ≥ 0
+layerCount = 1
+
+3D, 0, 0
+
+imageType = VK_IMAGE_TYPE_3D
+width ≥ 1
+height ≥ 1
+depth ≥ 1
+arrayLayers = 1
+samples = 1
+flags includes VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT
+flags does not include VK_IMAGE_CREATE_SPARSE_BINDING_BIT, VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT, and VK_IMAGE_CREATE_SPARSE_ALIASED_BIT
+
+viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY
+levelCount = 1
+baseArrayLayer ≥ 0
+layerCount ≥ 1
+
+Valid Usage
+VUID-VkImageViewCreateInfo-image-01003
+If image was not created with VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT then viewType must not be VK_IMAGE_VIEW_TYPE_CUBE or VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+
+VUID-VkImageViewCreateInfo-viewType-01004
+If the image cubemap arrays feature is not enabled, viewType must not be VK_IMAGE_VIEW_TYPE_CUBE_ARRAY
+
+VUID-VkImageViewCreateInfo-image-01005
+If image was created with VK_IMAGE_TYPE_3D but without VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT set then viewType must not be VK_IMAGE_VIEW_TYPE_2D or VK_IMAGE_VIEW_TYPE_2D_ARRAY
+
+VUID-VkImageViewCreateInfo-image-02570
+image must have been created with a usage value containing at least one of VK_IMAGE_USAGE_SAMPLED_BIT, VK_IMAGE_USAGE_STORAGE_BIT, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV, or VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT
+
+VUID-VkImageViewCreateInfo-None-02273
+The format features of the resultant image view must contain at least one bit.
+
+VUID-VkImageViewCreateInfo-usage-02274
+If usage contains VK_IMAGE_USAGE_SAMPLED_BIT, then the format features of the resultant image view must contain VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT.
+
+VUID-VkImageViewCreateInfo-usage-02275
+If usage contains VK_IMAGE_USAGE_STORAGE_BIT, then the image view’s format features must contain VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT.
+
+VUID-VkImageViewCreateInfo-usage-02276
+If usage contains VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, then the image view’s format features must contain VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT.
+
+VUID-VkImageViewCreateInfo-usage-02277
+If usage contains VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, then the image view’s format features must contain VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT.
+
+VUID-VkImageViewCreateInfo-usage-02652
+If usage contains VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, then the image view’s format features must contain at least one of VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT or VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT.
+
+VUID-VkImageViewCreateInfo-subresourceRange-01478
+subresourceRange.baseMipLevel must be less than the mipLevels specified in VkImageCreateInfo when image was created
+
+VUID-VkImageViewCreateInfo-subresourceRange-01718
+If subresourceRange.levelCount is not VK_REMAINING_MIP_LEVELS, subresourceRange.baseMipLevel + subresourceRange.levelCount must be less than or equal to the mipLevels specified in VkImageCreateInfo when image was created
+
+VUID-VkImageViewCreateInfo-image-02571
+If image was created with usage containing VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT, subresourceRange.levelCount must be 1
+
+VUID-VkImageViewCreateInfo-image-01482
+If image is not a 3D image created with VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT set, or viewType is not VK_IMAGE_VIEW_TYPE_2D or VK_IMAGE_VIEW_TYPE_2D_ARRAY, subresourceRange.baseArrayLayer must be less than the arrayLayers specified in VkImageCreateInfo when image was created
+
+VUID-VkImageViewCreateInfo-subresourceRange-01483
+If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, image is not a 3D image created with VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT set, or viewType is not VK_IMAGE_VIEW_TYPE_2D or VK_IMAGE_VIEW_TYPE_2D_ARRAY, subresourceRange.layerCount must be non-zero and subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the arrayLayers specified in VkImageCreateInfo when image was created
+
+VUID-VkImageViewCreateInfo-image-02724
+If image is a 3D image created with VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT set, and viewType is VK_IMAGE_VIEW_TYPE_2D or VK_IMAGE_VIEW_TYPE_2D_ARRAY, subresourceRange.baseArrayLayer must be less than the depth computed from baseMipLevel and extent.depth specified in VkImageCreateInfo when image was created, according to the formula defined in Image Miplevel Sizing.
+
+VUID-VkImageViewCreateInfo-subresourceRange-02725
+If subresourceRange.layerCount is not VK_REMAINING_ARRAY_LAYERS, image is a 3D image created with VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT set, and viewType is VK_IMAGE_VIEW_TYPE_2D or VK_IMAGE_VIEW_TYPE_2D_ARRAY, subresourceRange.layerCount must be non-zero and subresourceRange.baseArrayLayer + subresourceRange.layerCount must be less than or equal to the depth computed from baseMipLevel and extent.depth specified in VkImageCreateInfo when image was created, according to the formula defined in Image Miplevel Sizing.
+
+VUID-VkImageViewCreateInfo-image-01018
+If image was created with the VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT flag, format must be compatible with the format used to create image, as defined in Format Compatibility Classes
+
+VUID-VkImageViewCreateInfo-image-01761
+If image was created with the VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT flag, but without the VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT flag, and if the format of the image is not a multi-planar format, format must be compatible with the format used to create image, as defined in Format Compatibility Classes
+
+VUID-VkImageViewCreateInfo-image-01583
+If image was created with the VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT flag, format must be compatible with, or must be an uncompressed format that is size-compatible with, the format used to create image.
+
+VUID-VkImageViewCreateInfo-image-01584
+If image was created with the VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT flag, the levelCount and layerCount members of subresourceRange must both be 1.
+
+VUID-VkImageViewCreateInfo-pNext-01585
+If a VkImageFormatListCreateInfo structure was included in the pNext chain of the VkImageCreateInfo structure used when creating image and the viewFormatCount field of VkImageFormatListCreateInfo is not zero then format must be one of the formats in VkImageFormatListCreateInfo::pViewFormats.
+
+VUID-VkImageViewCreateInfo-image-01586
+If image was created with the VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT flag, if the format of the image is a multi-planar format, and if subresourceRange.aspectMask is one of VK_IMAGE_ASPECT_PLANE_0_BIT, VK_IMAGE_ASPECT_PLANE_1_BIT, or VK_IMAGE_ASPECT_PLANE_2_BIT, then format must be compatible with the VkFormat for the plane of the image format indicated by subresourceRange.aspectMask, as defined in https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#formats-compatible-planes
+
+VUID-VkImageViewCreateInfo-image-01762
+If image was not created with the VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT flag, or if the format of the image is a multi-planar format and if subresourceRange.aspectMask is VK_IMAGE_ASPECT_COLOR_BIT, format must be identical to the format used to create image
+
+VUID-VkImageViewCreateInfo-pNext-01970
+If the pNext chain includes a VkSamplerYcbcrConversionInfo structure with a conversion value other than VK_NULL_HANDLE, all members of components must have the value VK_COMPONENT_SWIZZLE_IDENTITY.
+
+VUID-VkImageViewCreateInfo-image-01020
+If image is non-sparse then it must be bound completely and contiguously to a single VkDeviceMemory object
+
+VUID-VkImageViewCreateInfo-subResourceRange-01021
+subresourceRange and viewType must be compatible with the image, as described in the compatibility table
+
+VUID-VkImageViewCreateInfo-image-02399
+If image has an external format, format must be VK_FORMAT_UNDEFINED.
+
+VUID-VkImageViewCreateInfo-image-02400
+If image has an external format, the pNext chain must include a VkSamplerYcbcrConversionInfo structure with a conversion object created with the same external format as image.
+
+VUID-VkImageViewCreateInfo-image-02401
+If image has an external format, all members of components must be VK_COMPONENT_SWIZZLE_IDENTITY.
+
+VUID-VkImageViewCreateInfo-image-02086
+If image was created with usage containing VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV, viewType must be VK_IMAGE_VIEW_TYPE_2D or VK_IMAGE_VIEW_TYPE_2D_ARRAY
+
+VUID-VkImageViewCreateInfo-image-02087
+If image was created with usage containing VK_IMAGE_USAGE_SHADING_RATE_IMAGE_BIT_NV, format must be VK_FORMAT_R8_UINT
+
+VUID-VkImageViewCreateInfo-flags-02572
+If dynamic fragment density map feature is not enabled, flags must not contain VK_IMAGE_VIEW_CREATE_FRAGMENT_DENSITY_MAP_DYNAMIC_BIT_EXT
+
+VUID-VkImageViewCreateInfo-image-02573
+If dynamic fragment density map feature is not enabled and image was created with usage containing VK_IMAGE_USAGE_FRAGMENT_DENSITY_MAP_BIT_EXT, flags must not contain any of VK_IMAGE_CREATE_PROTECTED_BIT, VK_IMAGE_CREATE_SPARSE_BINDING_BIT, VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT, or VK_IMAGE_CREATE_SPARSE_ALIASED_BIT
+
+VUID-VkImageViewCreateInfo-pNext-02662
+If the pNext chain includes a VkImageViewUsageCreateInfo structure, and image was not created with a VkImageStencilUsageCreateInfo structure included in the pNext chain of VkImageCreateInfo, its usage member must not include any bits that were not set in the usage member of the VkImageCreateInfo structure used to create image
+
+VUID-VkImageViewCreateInfo-pNext-02663
+If the pNext chain includes a VkImageViewUsageCreateInfo structure, image was created with a VkImageStencilUsageCreateInfo structure included in the pNext chain of VkImageCreateInfo, and subResourceRange.aspectMask includes VK_IMAGE_ASPECT_STENCIL_BIT, the usage member of the VkImageViewUsageCreateInfo instance must not include any bits that were not set in the usage member of the VkImageStencilUsageCreateInfo structure used to create image
+
+VUID-VkImageViewCreateInfo-pNext-02664
+If the pNext chain includes a VkImageViewUsageCreateInfo structure, image was created with a VkImageStencilUsageCreateInfo structure included in the pNext chain of VkImageCreateInfo, and subResourceRange.aspectMask includes bits other than VK_IMAGE_ASPECT_STENCIL_BIT, the usage member of the VkImageViewUsageCreateInfo structure must not include any bits that were not set in the usage member of the VkImageCreateInfo structure used to create image
+
+Valid Usage (Implicit)
+VUID-VkImageViewCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
+
+VUID-VkImageViewCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkImageViewASTCDecodeModeEXT, VkImageViewUsageCreateInfo, or VkSamplerYcbcrConversionInfo
+
+VUID-VkImageViewCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkImageViewCreateInfo-flags-parameter
+flags must be a valid combination of VkImageViewCreateFlagBits values
+
+VUID-VkImageViewCreateInfo-image-parameter
+image must be a valid VkImage handle
+
+VUID-VkImageViewCreateInfo-viewType-parameter
+viewType must be a valid VkImageViewType value
+
+VUID-VkImageViewCreateInfo-format-parameter
+format must be a valid VkFormat value
+
+VUID-VkImageViewCreateInfo-components-parameter
+components must be a valid VkComponentMapping structure
+
+VUID-VkImageViewCreateInfo-subresourceRange-parameter
+subresourceRange must be a valid VkImageSubresourceRange structure
+
+See Also

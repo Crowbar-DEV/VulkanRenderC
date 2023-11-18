@@ -1,0 +1,50 @@
+vkGetSwapchainImagesKHR - Obtain the array of presentable images associated with a swapchain
+
+C Specification
+To obtain the array of presentable images associated with a swapchain, call:
+
+VkResult vkGetSwapchainImagesKHR(
+    VkDevice                                    device,
+    VkSwapchainKHR                              swapchain,
+    uint32_t*                                   pSwapchainImageCount,
+    VkImage*                                    pSwapchainImages);
+Parameters
+device is the device associated with swapchain.
+
+swapchain is the swapchain to query.
+
+pSwapchainImageCount is a pointer to an integer related to the number of presentable images available or queried, as described below.
+
+pSwapchainImages is either NULL or a pointer to an array of VkImage handles.
+
+Description
+If pSwapchainImages is NULL, then the number of presentable images for swapchain is returned in pSwapchainImageCount. Otherwise, pSwapchainImageCount must point to a variable set by the user to the number of elements in the pSwapchainImages array, and on return the variable is overwritten with the number of structures actually written to pSwapchainImages. If the value of pSwapchainImageCount is less than the number of presentable images for swapchain, at most pSwapchainImageCount structures will be written. If pSwapchainImageCount is smaller than the number of presentable images for swapchain, VK_INCOMPLETE will be returned instead of VK_SUCCESS to indicate that not all the available values were returned.
+
+Valid Usage (Implicit)
+VUID-vkGetSwapchainImagesKHR-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkGetSwapchainImagesKHR-swapchain-parameter
+swapchain must be a valid VkSwapchainKHR handle
+
+VUID-vkGetSwapchainImagesKHR-pSwapchainImageCount-parameter
+pSwapchainImageCount must be a valid pointer to a uint32_t value
+
+VUID-vkGetSwapchainImagesKHR-pSwapchainImages-parameter
+If the value referenced by pSwapchainImageCount is not 0, and pSwapchainImages is not NULL, pSwapchainImages must be a valid pointer to an array of pSwapchainImageCount VkImage handles
+
+VUID-vkGetSwapchainImagesKHR-commonparent
+Both of device, and swapchain must have been created, allocated, or retrieved from the same VkInstance
+
+Return Codes
+Success
+VK_SUCCESS
+
+VK_INCOMPLETE
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

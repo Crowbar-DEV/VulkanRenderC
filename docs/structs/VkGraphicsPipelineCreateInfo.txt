@@ -1,0 +1,301 @@
+VkGraphicsPipelineCreateInfo - Structure specifying parameters of a newly created graphics pipeline
+
+C Specification
+The VkGraphicsPipelineCreateInfo structure is defined as:
+
+typedef struct VkGraphicsPipelineCreateInfo {
+    VkStructureType                                  sType;
+    const void*                                      pNext;
+    VkPipelineCreateFlags                            flags;
+    uint32_t                                         stageCount;
+    const VkPipelineShaderStageCreateInfo*           pStages;
+    const VkPipelineVertexInputStateCreateInfo*      pVertexInputState;
+    const VkPipelineInputAssemblyStateCreateInfo*    pInputAssemblyState;
+    const VkPipelineTessellationStateCreateInfo*     pTessellationState;
+    const VkPipelineViewportStateCreateInfo*         pViewportState;
+    const VkPipelineRasterizationStateCreateInfo*    pRasterizationState;
+    const VkPipelineMultisampleStateCreateInfo*      pMultisampleState;
+    const VkPipelineDepthStencilStateCreateInfo*     pDepthStencilState;
+    const VkPipelineColorBlendStateCreateInfo*       pColorBlendState;
+    const VkPipelineDynamicStateCreateInfo*          pDynamicState;
+    VkPipelineLayout                                 layout;
+    VkRenderPass                                     renderPass;
+    uint32_t                                         subpass;
+    VkPipeline                                       basePipelineHandle;
+    int32_t                                          basePipelineIndex;
+} VkGraphicsPipelineCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is a bitmask of VkPipelineCreateFlagBits specifying how the pipeline will be generated.
+
+stageCount is the number of entries in the pStages array.
+
+pStages is a pointer to an array of stageCount VkPipelineShaderStageCreateInfo structures describing the set of the shader stages to be included in the graphics pipeline.
+
+pVertexInputState is a pointer to a VkPipelineVertexInputStateCreateInfo structure. It is ignored if the pipeline includes a mesh shader stage.
+
+pInputAssemblyState is a pointer to a VkPipelineInputAssemblyStateCreateInfo structure which determines input assembly behavior, as described in Drawing Commands. It is ignored if the pipeline includes a mesh shader stage.
+
+pTessellationState is a pointer to a VkPipelineTessellationStateCreateInfo structure, and is ignored if the pipeline does not include a tessellation control shader stage and tessellation evaluation shader stage.
+
+pViewportState is a pointer to a VkPipelineViewportStateCreateInfo structure, and is ignored if the pipeline has rasterization disabled.
+
+pRasterizationState is a pointer to a VkPipelineRasterizationStateCreateInfo structure.
+
+pMultisampleState is a pointer to a VkPipelineMultisampleStateCreateInfo structure, and is ignored if the pipeline has rasterization disabled.
+
+pDepthStencilState is a pointer to a VkPipelineDepthStencilStateCreateInfo structure, and is ignored if the pipeline has rasterization disabled or if the subpass of the render pass the pipeline is created against does not use a depth/stencil attachment.
+
+pColorBlendState is a pointer to a VkPipelineColorBlendStateCreateInfo structure, and is ignored if the pipeline has rasterization disabled or if the subpass of the render pass the pipeline is created against does not use any color attachments.
+
+pDynamicState is a pointer to a VkPipelineDynamicStateCreateInfo structure, and is used to indicate which properties of the pipeline state object are dynamic and can be changed independently of the pipeline state. This can be NULL, which means no state in the pipeline is considered dynamic.
+
+layout is the description of binding locations used by both the pipeline and descriptor sets used with the pipeline.
+
+renderPass is a handle to a render pass object describing the environment in which the pipeline will be used; the pipeline must only be used with an instance of any render pass compatible with the one provided. See Render Pass Compatibility for more information.
+
+subpass is the index of the subpass in the render pass where this pipeline will be used.
+
+basePipelineHandle is a pipeline to derive from.
+
+basePipelineIndex is an index into the pCreateInfos parameter to use as a pipeline to derive from.
+
+Description
+The parameters basePipelineHandle and basePipelineIndex are described in more detail in Pipeline Derivatives.
+
+If any shader stage fails to compile, the compile log will be reported back to the application, and VK_ERROR_INVALID_SHADER_NV will be generated.
+
+Valid Usage
+VUID-VkGraphicsPipelineCreateInfo-flags-00722
+If flags contains the VK_PIPELINE_CREATE_DERIVATIVE_BIT flag, and basePipelineIndex is -1, basePipelineHandle must be a valid handle to a graphics VkPipeline
+
+VUID-VkGraphicsPipelineCreateInfo-flags-00723
+If flags contains the VK_PIPELINE_CREATE_DERIVATIVE_BIT flag, and basePipelineHandle is VK_NULL_HANDLE, basePipelineIndex must be a valid index into the calling command’s pCreateInfos parameter
+
+VUID-VkGraphicsPipelineCreateInfo-flags-00724
+If flags contains the VK_PIPELINE_CREATE_DERIVATIVE_BIT flag, and basePipelineIndex is not -1, basePipelineHandle must be VK_NULL_HANDLE
+
+VUID-VkGraphicsPipelineCreateInfo-flags-00725
+If flags contains the VK_PIPELINE_CREATE_DERIVATIVE_BIT flag, and basePipelineHandle is not VK_NULL_HANDLE, basePipelineIndex must be -1
+
+VUID-VkGraphicsPipelineCreateInfo-stage-00726
+The stage member of each element of pStages must be unique
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-02095
+The geometric shader stages provided in pStages must be either from the mesh shading pipeline (stage is VK_SHADER_STAGE_TASK_BIT_NV or VK_SHADER_STAGE_MESH_BIT_NV) or from the primitive shading pipeline (stage is VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, or VK_SHADER_STAGE_GEOMETRY_BIT).
+
+VUID-VkGraphicsPipelineCreateInfo-stage-02096
+The stage member of one element of pStages must be either VK_SHADER_STAGE_VERTEX_BIT or VK_SHADER_STAGE_MESH_BIT_NV.
+
+VUID-VkGraphicsPipelineCreateInfo-stage-00728
+The stage member of each element of pStages must not be VK_SHADER_STAGE_COMPUTE_BIT
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00729
+If pStages includes a tessellation control shader stage, it must include a tessellation evaluation shader stage
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00730
+If pStages includes a tessellation evaluation shader stage, it must include a tessellation control shader stage
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00731
+If pStages includes a tessellation control shader stage and a tessellation evaluation shader stage, pTessellationState must be a valid pointer to a valid VkPipelineTessellationStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00732
+If pStages includes tessellation shader stages, the shader code of at least one stage must contain an OpExecutionMode instruction that specifies the type of subdivision in the pipeline
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00733
+If pStages includes tessellation shader stages, and the shader code of both stages contain an OpExecutionMode instruction that specifies the type of subdivision in the pipeline, they must both specify the same subdivision mode
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00734
+If pStages includes tessellation shader stages, the shader code of at least one stage must contain an OpExecutionMode instruction that specifies the output patch size in the pipeline
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00735
+If pStages includes tessellation shader stages, and the shader code of both contain an OpExecutionMode instruction that specifies the out patch size in the pipeline, they must both specify the same patch size
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00736
+If pStages includes tessellation shader stages, the topology member of pInputAssembly must be VK_PRIMITIVE_TOPOLOGY_PATCH_LIST
+
+VUID-VkGraphicsPipelineCreateInfo-topology-00737
+If the topology member of pInputAssembly is VK_PRIMITIVE_TOPOLOGY_PATCH_LIST, pStages must include tessellation shader stages
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00738
+If pStages includes a geometry shader stage, and does not include any tessellation shader stages, its shader code must contain an OpExecutionMode instruction that specifies an input primitive type that is compatible with the primitive topology specified in pInputAssembly
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00739
+If pStages includes a geometry shader stage, and also includes tessellation shader stages, its shader code must contain an OpExecutionMode instruction that specifies an input primitive type that is compatible with the primitive topology that is output by the tessellation stages
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00740
+If pStages includes a fragment shader stage and a geometry shader stage, and the fragment shader code reads from an input variable that is decorated with PrimitiveID, then the geometry shader code must write to a matching output variable, decorated with PrimitiveID, in all execution paths
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00741
+If pStages includes a fragment shader stage, its shader code must not read from any input attachment that is defined as VK_ATTACHMENT_UNUSED in subpass
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-00742
+The shader code for the entry points identified by pStages, and the rest of the state identified by this structure must adhere to the pipeline linking rules described in the Shader Interfaces chapter
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-01756
+If rasterization is not disabled and subpass uses a depth/stencil attachment in renderPass that has a layout of VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL or VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL in the VkAttachmentReference defined by subpass, the depthWriteEnable member of pDepthStencilState must be VK_FALSE
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-01757
+If rasterization is not disabled and subpass uses a depth/stencil attachment in renderPass that has a layout of VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL or VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL in the VkAttachmentReference defined by subpass, the failOp, passOp and depthFailOp members of each of the front and back members of pDepthStencilState must be VK_STENCIL_OP_KEEP
+
+VUID-VkGraphicsPipelineCreateInfo-blendEnable-02023
+If rasterization is not disabled and the subpass uses color attachments, then for each color attachment in the subpass the blendEnable member of the corresponding element of the pAttachment member of pColorBlendState must be VK_FALSE if the attached image’s format features does not contain VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT.
+
+VUID-VkGraphicsPipelineCreateInfo-attachmentCount-00746
+If rasterization is not disabled and the subpass uses color attachments, the attachmentCount member of pColorBlendState must be equal to the colorAttachmentCount used to create subpass
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00747
+If no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_VIEWPORT, the pViewports member of pViewportState must be a valid pointer to an array of pViewportState->viewportCount valid VkViewport structures
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00748
+If no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_SCISSOR, the pScissors member of pViewportState must be a valid pointer to an array of pViewportState->scissorCount VkRect2D structures
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00749
+If the wide lines feature is not enabled, and no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_LINE_WIDTH, the lineWidth member of pRasterizationState must be 1.0
+
+VUID-VkGraphicsPipelineCreateInfo-rasterizerDiscardEnable-00750
+If the rasterizerDiscardEnable member of pRasterizationState is VK_FALSE, pViewportState must be a valid pointer to a valid VkPipelineViewportStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-rasterizerDiscardEnable-00751
+If the rasterizerDiscardEnable member of pRasterizationState is VK_FALSE, pMultisampleState must be a valid pointer to a valid VkPipelineMultisampleStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-rasterizerDiscardEnable-00752
+If the rasterizerDiscardEnable member of pRasterizationState is VK_FALSE, and subpass uses a depth/stencil attachment, pDepthStencilState must be a valid pointer to a valid VkPipelineDepthStencilStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-rasterizerDiscardEnable-00753
+If the rasterizerDiscardEnable member of pRasterizationState is VK_FALSE, and subpass uses color attachments, pColorBlendState must be a valid pointer to a valid VkPipelineColorBlendStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-00754
+If the depth bias clamping feature is not enabled, no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_DEPTH_BIAS, and the depthBiasEnable member of pRasterizationState is VK_TRUE, the depthBiasClamp member of pRasterizationState must be 0.0
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-02510
+If the https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_EXT_depth_range_unrestricted extension is not enabled and no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_DEPTH_BOUNDS, and the depthBoundsTestEnable member of pDepthStencilState is VK_TRUE, the minDepthBounds and maxDepthBounds members of pDepthStencilState must be between 0.0 and 1.0, inclusive
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-01521
+If no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT, and the sampleLocationsEnable member of a VkPipelineSampleLocationsStateCreateInfoEXT structure included in the pNext chain of pMultisampleState is VK_TRUE, sampleLocationsInfo.sampleLocationGridSize.width must evenly divide VkMultisamplePropertiesEXT::sampleLocationGridSize.width as returned by vkGetPhysicalDeviceMultisamplePropertiesEXT with a samples parameter equaling rasterizationSamples
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-01522
+If no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT, and the sampleLocationsEnable member of a VkPipelineSampleLocationsStateCreateInfoEXT structure included in the pNext chain of pMultisampleState is VK_TRUE, sampleLocationsInfo.sampleLocationGridSize.height must evenly divide VkMultisamplePropertiesEXT::sampleLocationGridSize.height as returned by vkGetPhysicalDeviceMultisamplePropertiesEXT with a samples parameter equaling rasterizationSamples
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-01523
+If no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_SAMPLE_LOCATIONS_EXT, and the sampleLocationsEnable member of a VkPipelineSampleLocationsStateCreateInfoEXT structure included in the pNext chain of pMultisampleState is VK_TRUE, sampleLocationsInfo.sampleLocationsPerPixel must equal rasterizationSamples
+
+VUID-VkGraphicsPipelineCreateInfo-sampleLocationsEnable-01524
+If the sampleLocationsEnable member of a VkPipelineSampleLocationsStateCreateInfoEXT structure included in the pNext chain of pMultisampleState is VK_TRUE, the fragment shader code must not statically use the extended instruction InterpolateAtSample
+
+VUID-VkGraphicsPipelineCreateInfo-layout-00756
+layout must be consistent with all shaders specified in pStages
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-00757
+If neither the VK_AMD_mixed_attachment_samples nor the VK_NV_framebuffer_mixed_samples extensions are enabled, and if subpass uses color and/or depth/stencil attachments, then the rasterizationSamples member of pMultisampleState must be the same as the sample count for those subpass attachments
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-01505
+If the VK_AMD_mixed_attachment_samples extension is enabled, and if subpass uses color and/or depth/stencil attachments, then the rasterizationSamples member of pMultisampleState must equal the maximum of the sample counts of those subpass attachments
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-01411
+If the VK_NV_framebuffer_mixed_samples extension is enabled, and if subpass has a depth/stencil attachment and depth test, stencil test, or depth bounds test are enabled, then the rasterizationSamples member of pMultisampleState must be the same as the sample count of the depth/stencil attachment
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-01412
+If the VK_NV_framebuffer_mixed_samples extension is enabled, and if subpass has any color attachments, then the rasterizationSamples member of pMultisampleState must be greater than or equal to the sample count for those subpass attachments
+
+VUID-VkGraphicsPipelineCreateInfo-coverageReductionMode-02722
+If the VK_NV_coverage_reduction_mode extension is enabled, the coverage reduction mode specified by VkPipelineCoverageReductionStateCreateInfoNV::coverageReductionMode, the rasterizationSamples member of pMultisampleState and the sample counts for the color and depth/stencil attachments (if the subpass has them) must be a valid combination returned by vkGetPhysicalDeviceSupportedFramebufferMixedSamplesCombinationsNV
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-00758
+If subpass does not use any color and/or depth/stencil attachments, then the rasterizationSamples member of pMultisampleState must follow the rules for a zero-attachment subpass
+
+VUID-VkGraphicsPipelineCreateInfo-subpass-00759
+subpass must be a valid subpass within renderPass
+
+VUID-VkGraphicsPipelineCreateInfo-renderPass-00760
+If the renderPass has multiview enabled and subpass has more than one bit set in the view mask and multiviewTessellationShader is not enabled, then pStages must not include tessellation shaders.
+
+VUID-VkGraphicsPipelineCreateInfo-renderPass-00761
+If the renderPass has multiview enabled and subpass has more than one bit set in the view mask and multiviewGeometryShader is not enabled, then pStages must not include a geometry shader.
+
+VUID-VkGraphicsPipelineCreateInfo-renderPass-00762
+If the renderPass has multiview enabled and subpass has more than one bit set in the view mask, shaders in the pipeline must not write to the Layer built-in output
+
+VUID-VkGraphicsPipelineCreateInfo-renderPass-00763
+If the renderPass has multiview enabled, then all shaders must not include variables decorated with the Layer built-in decoration in their interfaces.
+
+VUID-VkGraphicsPipelineCreateInfo-flags-00764
+flags must not contain the VK_PIPELINE_CREATE_DISPATCH_BASE flag.
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-01565
+If pStages includes a fragment shader stage and an input attachment was referenced by the VkRenderPassInputAttachmentAspectCreateInfo at renderPass create time, its shader code must not read from any aspect that was not specified in the aspectMask of the corresponding VkInputAttachmentAspectReference structure.
+
+VUID-VkGraphicsPipelineCreateInfo-layout-01688
+The number of resources in layout accessible to each shader stage that is used by the pipeline must be less than or equal to VkPhysicalDeviceLimits::maxPerStageResources
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicStates-01715
+If no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_VIEWPORT_W_SCALING_NV, and the viewportWScalingEnable member of a VkPipelineViewportWScalingStateCreateInfoNV structure, included in the pNext chain of pViewportState, is VK_TRUE, the pViewportWScalings member of the VkPipelineViewportWScalingStateCreateInfoNV must be a pointer to an array of VkPipelineViewportWScalingStateCreateInfoNV::viewportCount valid VkViewportWScalingNV structures
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-02097
+If pStages includes a vertex shader stage, pVertexInputState must be a valid pointer to a valid VkPipelineVertexInputStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-02098
+If pStages includes a vertex shader stage, pInputAssemblyState must be a valid pointer to a valid VkPipelineInputAssemblyStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-02317
+The Xfb execution mode can be specified by only one shader stage in pStages
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-02318
+If any shader stage in pStages specifies Xfb execution mode it must be the last vertex processing stage
+
+VUID-VkGraphicsPipelineCreateInfo-rasterizationStream-02319
+If a VkPipelineRasterizationStateStreamCreateInfoEXT::rasterizationStream value other than zero is specified, all variables in the output interface of the entry point being compiled decorated with Position, PointSize, ClipDistance, or CullDistance must all be decorated with identical Stream values that match the rasterizationStream
+
+VUID-VkGraphicsPipelineCreateInfo-rasterizationStream-02320
+If VkPipelineRasterizationStateStreamCreateInfoEXT::rasterizationStream is zero, or not specified, all variables in the output interface of the entry point being compiled decorated with Position, PointSize, ClipDistance, or CullDistance must all be decorated with a Stream value of zero, or must not specify the Stream decoration
+
+VUID-VkGraphicsPipelineCreateInfo-geometryStreams-02321
+If the last vertex processing stage is a geometry shader, and that geometry shader uses the GeometryStreams capability, then VkPhysicalDeviceTransformFeedbackFeaturesEXT::geometryStreams feature must be enabled
+
+VUID-VkGraphicsPipelineCreateInfo-None-02322
+If there are any mesh shader stages in the pipeline there must not be any shader stage in the pipeline with a Xfb execution mode.
+
+VUID-VkGraphicsPipelineCreateInfo-lineRasterizationMode-02766
+If the lineRasterizationMode member of a VkPipelineRasterizationLineStateCreateInfoEXT structure included in the pNext chain of pRasterizationState is VK_LINE_RASTERIZATION_MODE_BRESENHAM_EXT or VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_EXT and if rasterization is enabled, then the alphaToCoverageEnable, alphaToOneEnable, and sampleShadingEnable members of pMultisampleState must all be VK_FALSE
+
+VUID-VkGraphicsPipelineCreateInfo-stippledLineEnable-02767
+If the stippledLineEnable member of VkPipelineRasterizationLineStateCreateInfoEXT is VK_TRUE and no element of the pDynamicStates member of pDynamicState is VK_DYNAMIC_STATE_LINE_STIPPLE_EXT, then the lineStippleFactor member of VkPipelineRasterizationLineStateCreateInfoEXT must be in the range [1,256]
+
+Valid Usage (Implicit)
+VUID-VkGraphicsPipelineCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
+
+VUID-VkGraphicsPipelineCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkPipelineCompilerControlCreateInfoAMD, VkPipelineCreationFeedbackCreateInfoEXT, VkPipelineDiscardRectangleStateCreateInfoEXT, or VkPipelineRepresentativeFragmentTestStateCreateInfoNV
+
+VUID-VkGraphicsPipelineCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkGraphicsPipelineCreateInfo-flags-parameter
+flags must be a valid combination of VkPipelineCreateFlagBits values
+
+VUID-VkGraphicsPipelineCreateInfo-pStages-parameter
+pStages must be a valid pointer to an array of stageCount valid VkPipelineShaderStageCreateInfo structures
+
+VUID-VkGraphicsPipelineCreateInfo-pRasterizationState-parameter
+pRasterizationState must be a valid pointer to a valid VkPipelineRasterizationStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-pDynamicState-parameter
+If pDynamicState is not NULL, pDynamicState must be a valid pointer to a valid VkPipelineDynamicStateCreateInfo structure
+
+VUID-VkGraphicsPipelineCreateInfo-layout-parameter
+layout must be a valid VkPipelineLayout handle
+
+VUID-VkGraphicsPipelineCreateInfo-renderPass-parameter
+renderPass must be a valid VkRenderPass handle
+
+VUID-VkGraphicsPipelineCreateInfo-stageCount-arraylength
+stageCount must be greater than 0
+
+VUID-VkGraphicsPipelineCreateInfo-commonparent
+Each of basePipelineHandle, layout, and renderPass that are valid handles of non-ignored parameters must have been created, allocated, or retrieved from the same VkDevice
+
+See Also

@@ -1,0 +1,127 @@
+VkRenderPassBeginInfo - Structure specifying render pass begin info
+
+C Specification
+The VkRenderPassBeginInfo structure is defined as:
+
+typedef struct VkRenderPassBeginInfo {
+    VkStructureType        sType;
+    const void*            pNext;
+    VkRenderPass           renderPass;
+    VkFramebuffer          framebuffer;
+    VkRect2D               renderArea;
+    uint32_t               clearValueCount;
+    const VkClearValue*    pClearValues;
+} VkRenderPassBeginInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+renderPass is the render pass to begin an instance of.
+
+framebuffer is the framebuffer containing the attachments that are used with the render pass.
+
+renderArea is the render area that is affected by the render pass instance, and is described in more detail below.
+
+clearValueCount is the number of elements in pClearValues.
+
+pClearValues is a pointer to an array of clearValueCount VkClearValue structures that contains clear values for each attachment, if the attachment uses a loadOp value of VK_ATTACHMENT_LOAD_OP_CLEAR or if the attachment has a depth/stencil format and uses a stencilLoadOp value of VK_ATTACHMENT_LOAD_OP_CLEAR. The array is indexed by attachment number. Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
+
+Description
+renderArea is the render area that is affected by the render pass instance. The effects of attachment load, store and multisample resolve operations are restricted to the pixels whose x and y coordinates fall within the render area on all attachments. The render area extends to all layers of framebuffer. The application must ensure (using scissor if necessary) that all rendering is contained within the render area.
+
+When multiview is enabled, the resolve operation at the end of a subpass applies to all views in the view mask.
+
+Note
+There may be a performance cost for using a render area smaller than the framebuffer, unless it matches the render area granularity for the render pass.
+
+Valid Usage
+VUID-VkRenderPassBeginInfo-clearValueCount-00902
+clearValueCount must be greater than the largest attachment index in renderPass that specifies a loadOp (or stencilLoadOp, if the attachment has a depth/stencil format) of VK_ATTACHMENT_LOAD_OP_CLEAR
+
+VUID-VkRenderPassBeginInfo-renderPass-00904
+renderPass must be compatible with the renderPass member of the VkFramebufferCreateInfo structure specified when creating framebuffer
+
+VUID-VkRenderPassBeginInfo-pNext-02850
+If the pNext chain does not contain VkDeviceGroupRenderPassBeginInfo or its deviceRenderAreaCount member is equal to 0, renderArea.offset.x must be greater than or equal to 0
+
+VUID-VkRenderPassBeginInfo-pNext-02851
+If the pNext chain does not contain VkDeviceGroupRenderPassBeginInfo or its deviceRenderAreaCount member is equal to 0, renderArea.offset.y must be greater than or equal to 0
+
+VUID-VkRenderPassBeginInfo-pNext-02852
+If the pNext chain does not contain VkDeviceGroupRenderPassBeginInfo or its deviceRenderAreaCount member is equal to 0, renderArea.offset.x + renderArea.offset.width must be less than or equal to VkFramebufferCreateInfo::width the framebuffer was created with
+
+VUID-VkRenderPassBeginInfo-pNext-02853
+If the pNext chain does not contain VkDeviceGroupRenderPassBeginInfo or its deviceRenderAreaCount member is equal to 0, renderArea.offset.y + renderArea.offset.height must be less than or equal to VkFramebufferCreateInfo::height the framebuffer was created with
+
+VUID-VkRenderPassBeginInfo-pNext-02854
+If the pNext chain contains VkDeviceGroupRenderPassBeginInfo, the offset.x member of each element of pDeviceRenderAreas must be greater than or equal to 0
+
+VUID-VkRenderPassBeginInfo-pNext-02855
+If the pNext chain contains VkDeviceGroupRenderPassBeginInfo, the offset.y member of each element of pDeviceRenderAreas must be greater than or equal to 0
+
+VUID-VkRenderPassBeginInfo-pNext-02856
+If the pNext chain contains VkDeviceGroupRenderPassBeginInfo, offset.x + offset.width of each element of pDeviceRenderAreas must be less than or equal to VkFramebufferCreateInfo::width the framebuffer was created with
+
+VUID-VkRenderPassBeginInfo-pNext-02857
+If the pNext chain contains VkDeviceGroupRenderPassBeginInfo, offset.y + offset.height of each element of pDeviceRenderAreas must be less than or equal to VkFramebufferCreateInfo::height the framebuffer was created with
+
+VUID-VkRenderPassBeginInfo-framebuffer-03207
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that did not include VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, and the pNext chain includes a VkRenderPassAttachmentBeginInfo structure, its attachmentCount must be zero
+
+VUID-VkRenderPassBeginInfo-framebuffer-03208
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, the attachmentCount of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be equal to the value of VkFramebufferAttachmentsCreateInfo::attachmentImageInfoCount used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-02780
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT_KHR, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must have been created on the same VkDevice as framebuffer and renderPass
+
+VUID-VkRenderPassBeginInfo-framebuffer-03209
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView of an image created with a value of VkImageCreateInfo::flags equal to the flags member of the corresponding element of VkFramebufferAttachmentsCreateInfoKHR::pAttachments used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-03210
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView of an image created with a value of VkImageCreateInfo::usage equal to the usage member of the corresponding element of VkFramebufferAttachmentsCreateInfo::pAttachments used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-03211
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView with a width equal to the width member of the corresponding element of VkFramebufferAttachmentsCreateInfo::pAttachments used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-03212
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView with a height equal to the height member of the corresponding element of VkFramebufferAttachmentsCreateInfo::pAttachments used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-03213
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView of an image created with a value of VkImageViewCreateInfo::subresourceRange.layerCount equal to the layerCount member of the corresponding element of VkFramebufferAttachmentsCreateInfo::pAttachments used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-03214
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView of an image created with a value of VkImageFormatListCreateInfo::viewFormatCount equal to the viewFormatCount member of the corresponding element of VkFramebufferAttachmentsCreateInfo::pAttachments used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-03215
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView of an image created with a set of elements in VkImageFormatListCreateInfo::pViewFormats equal to the set of elements in the pViewFormats member of the corresponding element of VkFramebufferAttachmentsCreateInfo::pAttachments used to create framebuffer
+
+VUID-VkRenderPassBeginInfo-framebuffer-03216
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView of an image created with a value of VkImageViewCreateInfo::format equal to the corresponding value of VkAttachmentDescription::format in renderPass
+
+VUID-VkRenderPassBeginInfo-framebuffer-03217
+If framebuffer was created with a VkFramebufferCreateInfo::flags value that included VK_FRAMEBUFFER_CREATE_IMAGELESS_BIT, each element of the pAttachments member of a VkRenderPassAttachmentBeginInfo structure included in the pNext chain must be a VkImageView of an image created with a value of VkImageCreateInfo::samples equal to the corresponding value of VkAttachmentDescription::samples in renderPass
+
+Valid Usage (Implicit)
+VUID-VkRenderPassBeginInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO
+
+VUID-VkRenderPassBeginInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkDeviceGroupRenderPassBeginInfo, VkRenderPassAttachmentBeginInfo, or VkRenderPassSampleLocationsBeginInfoEXT
+
+VUID-VkRenderPassBeginInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkRenderPassBeginInfo-renderPass-parameter
+renderPass must be a valid VkRenderPass handle
+
+VUID-VkRenderPassBeginInfo-framebuffer-parameter
+framebuffer must be a valid VkFramebuffer handle
+
+VUID-VkRenderPassBeginInfo-pClearValues-parameter
+If clearValueCount is not 0, pClearValues must be a valid pointer to an array of clearValueCount VkClearValue unions
+
+VUID-VkRenderPassBeginInfo-commonparent
+Both of framebuffer, and renderPass must have been created, allocated, or retrieved from the same VkDevice
+
+See Also

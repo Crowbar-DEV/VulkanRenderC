@@ -1,0 +1,8 @@
+VkPipeline - Opaque handle to a pipeline object
+
+C Specification
+Compute, graphics, and ray tracing pipelines are each represented by VkPipeline handles:
+
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkPipeline)
+Description
+See Also

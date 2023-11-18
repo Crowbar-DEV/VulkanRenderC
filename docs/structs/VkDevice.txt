@@ -1,0 +1,8 @@
+VkDevice - Opaque handle to a device object
+
+C Specification
+Logical devices are represented by VkDevice handles:
+
+VK_DEFINE_HANDLE(VkDevice)
+Description
+See Also

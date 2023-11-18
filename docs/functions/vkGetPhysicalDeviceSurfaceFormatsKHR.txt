@@ -1,0 +1,60 @@
+vkGetPhysicalDeviceSurfaceFormatsKHR - Query color formats supported by surface
+
+C Specification
+To query the supported swapchain format-color space pairs for a surface, call:
+
+VkResult vkGetPhysicalDeviceSurfaceFormatsKHR(
+    VkPhysicalDevice                            physicalDevice,
+    VkSurfaceKHR                                surface,
+    uint32_t*                                   pSurfaceFormatCount,
+    VkSurfaceFormatKHR*                         pSurfaceFormats);
+Parameters
+physicalDevice is the physical device that will be associated with the swapchain to be created, as described for vkCreateSwapchainKHR.
+
+surface is the surface that will be associated with the swapchain.
+
+pSurfaceFormatCount is a pointer to an integer related to the number of format pairs available or queried, as described below.
+
+pSurfaceFormats is either NULL or a pointer to an array of VkSurfaceFormatKHR structures.
+
+Description
+If pSurfaceFormats is NULL, then the number of format pairs supported for the given surface is returned in pSurfaceFormatCount. Otherwise, pSurfaceFormatCount must point to a variable set by the user to the number of elements in the pSurfaceFormats array, and on return the variable is overwritten with the number of structures actually written to pSurfaceFormats. If the value of pSurfaceFormatCount is less than the number of format pairs supported, at most pSurfaceFormatCount structures will be written. If pSurfaceFormatCount is smaller than the number of format pairs supported for the given surface, VK_INCOMPLETE will be returned instead of VK_SUCCESS to indicate that not all the available values were returned.
+
+The number of format pairs supported must be greater than or equal to 1. pSurfaceFormats must not contain an entry whose value for format is VK_FORMAT_UNDEFINED.
+
+If pSurfaceFormats includes an entry whose value for colorSpace is VK_COLOR_SPACE_SRGB_NONLINEAR_KHR and whose value for format is a UNORM (or SRGB) format and the corresponding SRGB (or UNORM) format is a color renderable format for VK_IMAGE_TILING_OPTIMAL, then pSurfaceFormats must also contain an entry with the same value for colorSpace and format equal to the corresponding SRGB (or UNORM) format.
+
+Valid Usage
+VUID-vkGetPhysicalDeviceSurfaceFormatsKHR-surface-02739
+surface must be supported by physicalDevice, as reported by vkGetPhysicalDeviceSurfaceSupportKHR or an equivalent platform-specific mechanism.
+
+Valid Usage (Implicit)
+VUID-vkGetPhysicalDeviceSurfaceFormatsKHR-physicalDevice-parameter
+physicalDevice must be a valid VkPhysicalDevice handle
+
+VUID-vkGetPhysicalDeviceSurfaceFormatsKHR-surface-parameter
+surface must be a valid VkSurfaceKHR handle
+
+VUID-vkGetPhysicalDeviceSurfaceFormatsKHR-pSurfaceFormatCount-parameter
+pSurfaceFormatCount must be a valid pointer to a uint32_t value
+
+VUID-vkGetPhysicalDeviceSurfaceFormatsKHR-pSurfaceFormats-parameter
+If the value referenced by pSurfaceFormatCount is not 0, and pSurfaceFormats is not NULL, pSurfaceFormats must be a valid pointer to an array of pSurfaceFormatCount VkSurfaceFormatKHR structures
+
+VUID-vkGetPhysicalDeviceSurfaceFormatsKHR-commonparent
+Both of physicalDevice, and surface must have been created, allocated, or retrieved from the same VkInstance
+
+Return Codes
+Success
+VK_SUCCESS
+
+VK_INCOMPLETE
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_SURFACE_LOST_KHR
+
+See Also

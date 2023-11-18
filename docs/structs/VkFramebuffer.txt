@@ -1,0 +1,10 @@
+VkFramebuffer - Opaque handle to a framebuffer object
+
+C Specification
+Render passes operate in conjunction with framebuffers. Framebuffers represent a collection of specific memory attachments that a render pass instance uses.
+
+Framebuffers are represented by VkFramebuffer handles:
+
+VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkFramebuffer)
+Description
+See Also

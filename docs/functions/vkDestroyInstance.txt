@@ -1,0 +1,35 @@
+vkDestroyInstance - Destroy an instance of Vulkan
+
+C Specification
+To destroy an instance, call:
+
+void vkDestroyInstance(
+    VkInstance                                  instance,
+    const VkAllocationCallbacks*                pAllocator);
+Parameters
+instance is the handle of the instance to destroy.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+Description
+Valid Usage
+VUID-vkDestroyInstance-instance-00629
+All child objects created using instance must have been destroyed prior to destroying instance
+
+VUID-vkDestroyInstance-instance-00630
+If VkAllocationCallbacks were provided when instance was created, a compatible set of callbacks must be provided here
+
+VUID-vkDestroyInstance-instance-00631
+If no VkAllocationCallbacks were provided when instance was created, pAllocator must be NULL
+
+Valid Usage (Implicit)
+VUID-vkDestroyInstance-instance-parameter
+If instance is not NULL, instance must be a valid VkInstance handle
+
+VUID-vkDestroyInstance-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+Host Synchronization
+Host access to instance must be externally synchronized
+
+See Also

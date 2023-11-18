@@ -1,0 +1,36 @@
+VkCommandPoolCreateInfo - Structure specifying parameters of a newly created command pool
+
+C Specification
+The VkCommandPoolCreateInfo structure is defined as:
+
+typedef struct VkCommandPoolCreateInfo {
+    VkStructureType             sType;
+    const void*                 pNext;
+    VkCommandPoolCreateFlags    flags;
+    uint32_t                    queueFamilyIndex;
+} VkCommandPoolCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is a bitmask of VkCommandPoolCreateFlagBits indicating usage behavior for the pool and command buffers allocated from it.
+
+queueFamilyIndex designates a queue family as described in section Queue Family Properties. All command buffers allocated from this command pool must be submitted on queues from the same queue family.
+
+Description
+Valid Usage
+VUID-VkCommandPoolCreateInfo-flags-02860
+If the protected memory feature is not enabled, the VK_COMMAND_POOL_CREATE_PROTECTED_BIT bit of flags must not be set.
+
+Valid Usage (Implicit)
+VUID-VkCommandPoolCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
+
+VUID-VkCommandPoolCreateInfo-pNext-pNext
+pNext must be NULL
+
+VUID-VkCommandPoolCreateInfo-flags-parameter
+flags must be a valid combination of VkCommandPoolCreateFlagBits values
+
+See Also

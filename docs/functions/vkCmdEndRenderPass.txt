@@ -1,0 +1,52 @@
+vkCmdEndRenderPass - End the current render pass
+
+C Specification
+To record a command to end a render pass instance after recording the commands for the last subpass, call:
+
+void vkCmdEndRenderPass(
+    VkCommandBuffer                             commandBuffer);
+Parameters
+commandBuffer is the command buffer in which to end the current render pass instance.
+
+Description
+Ending a render pass instance performs any multisample resolve operations on the final subpass.
+
+Valid Usage
+VUID-vkCmdEndRenderPass-None-00910
+The current subpass index must be equal to the number of subpasses in the render pass minus one
+
+VUID-vkCmdEndRenderPass-None-02351
+This command must not be recorded when transform feedback is active
+
+Valid Usage (Implicit)
+VUID-vkCmdEndRenderPass-commandBuffer-parameter
+commandBuffer must be a valid VkCommandBuffer handle
+
+VUID-vkCmdEndRenderPass-commandBuffer-recording
+commandBuffer must be in the recording state
+
+VUID-vkCmdEndRenderPass-commandBuffer-cmdpool
+The VkCommandPool that commandBuffer was allocated from must support graphics operations
+
+VUID-vkCmdEndRenderPass-renderpass
+This command must only be called inside of a render pass instance
+
+VUID-vkCmdEndRenderPass-bufferlevel
+commandBuffer must be a primary VkCommandBuffer
+
+Host Synchronization
+Host access to commandBuffer must be externally synchronized
+
+Host access to the VkCommandPool that commandBuffer was allocated from must be externally synchronized
+
+Command Properties
+Command Buffer Levels	Render Pass Scope	Supported Queue Types	Pipeline Type
+Primary
+
+Inside
+
+Graphics
+
+Graphics
+
+See Also

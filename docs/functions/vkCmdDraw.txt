@@ -1,0 +1,140 @@
+vkCmdDraw - Draw primitives
+
+C Specification
+To record a non-indexed draw, call:
+
+void vkCmdDraw(
+    VkCommandBuffer                             commandBuffer,
+    uint32_t                                    vertexCount,
+    uint32_t                                    instanceCount,
+    uint32_t                                    firstVertex,
+    uint32_t                                    firstInstance);
+Parameters
+commandBuffer is the command buffer into which the command is recorded.
+
+vertexCount is the number of vertices to draw.
+
+instanceCount is the number of instances to draw.
+
+firstVertex is the index of the first vertex to draw.
+
+firstInstance is the instance ID of the first instance to draw.
+
+Description
+When the command is executed, primitives are assembled using the current primitive topology and vertexCount consecutive vertex indices with the first vertexIndex value equal to firstVertex. The primitives are drawn instanceCount times with instanceIndex starting with firstInstance and increasing sequentially for each instance. The assembled primitives execute the bound graphics pipeline.
+
+Valid Usage
+VUID-vkCmdDraw-None-02690
+If a VkImageView is sampled with VK_FILTER_LINEAR as a result of this command, then the image view’s format features must contain VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT
+
+VUID-vkCmdDraw-None-02691
+If a VkImageView is accessed using atomic operations as a result of this command, then the image view’s format features must contain VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT
+
+VUID-vkCmdDraw-None-02692
+If a VkImageView is sampled with VK_FILTER_CUBIC_EXT as a result of this command, then the image view’s format features must contain VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_EXT
+
+VUID-vkCmdDraw-filterCubic-02694
+Any VkImageView being sampled with VK_FILTER_CUBIC_EXT as a result of this command must have a VkImageViewType and format that supports cubic filtering, as specified by VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubic returned by vkGetPhysicalDeviceImageFormatProperties2
+
+VUID-vkCmdDraw-filterCubicMinmax-02695
+Any VkImageView being sampled with VK_FILTER_CUBIC_EXT with a reduction mode of either VK_SAMPLER_REDUCTION_MODE_MIN or VK_SAMPLER_REDUCTION_MODE_MAX as a result of this command must have a VkImageViewType and format that supports cubic filtering together with minmax filtering, as specified by VkFilterCubicImageViewImageFormatPropertiesEXT::filterCubicMinmax returned by vkGetPhysicalDeviceImageFormatProperties2
+
+VUID-vkCmdDraw-flags-02696
+Any VkImage created with a VkImageCreateInfo::flags containing VK_IMAGE_CREATE_CORNER_SAMPLED_BIT_NV sampled as a result of this command must only be sampled using a VkSamplerAddressMode of VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE.
+
+VUID-vkCmdDraw-None-02697
+For each set n that is statically used by the VkPipeline bound to the pipeline bind point used by this command, a descriptor set must have been bound to n at the same pipeline bind point, with a VkPipelineLayout that is compatible for set n, with the VkPipelineLayout used to create the current VkPipeline, as described in [descriptorsets-compatibility]
+
+VUID-vkCmdDraw-None-02698
+For each push constant that is statically used by the VkPipeline bound to the pipeline bind point used by this command, a push constant value must have been set for the same pipeline bind point, with a VkPipelineLayout that is compatible for push constants, with the VkPipelineLayout used to create the current VkPipeline, as described in [descriptorsets-compatibility]
+
+VUID-vkCmdDraw-None-02699
+Descriptors in each bound descriptor set, specified via vkCmdBindDescriptorSets, must be valid if they are statically used by the VkPipeline bound to the pipeline bind point used by this command
+
+VUID-vkCmdDraw-None-02700
+A valid pipeline must be bound to the pipeline bind point used by this command
+
+VUID-vkCmdDraw-commandBuffer-02701
+If the VkPipeline object bound to the pipeline bind point used by this command requires any dynamic state, that state must have been set for commandBuffer, and done so after any previously bound pipeline with the corresponding state not specified as dynamic
+
+VUID-vkCmdDraw-None-02859
+There must not have been any calls to dynamic state setting commands for any state not specified as dynamic in the VkPipeline object bound to the pipeline bind point used by this command, since that pipeline was bound
+
+VUID-vkCmdDraw-None-02702
+If the VkPipeline object bound to the pipeline bind point used by this command accesses a VkSampler object that uses unnormalized coordinates, that sampler must not be used to sample from any VkImage with a VkImageView of the type VK_IMAGE_VIEW_TYPE_3D, VK_IMAGE_VIEW_TYPE_CUBE, VK_IMAGE_VIEW_TYPE_1D_ARRAY, VK_IMAGE_VIEW_TYPE_2D_ARRAY or VK_IMAGE_VIEW_TYPE_CUBE_ARRAY, in any shader stage
+
+VUID-vkCmdDraw-None-02703
+If the VkPipeline object bound to the pipeline bind point used by this command accesses a VkSampler object that uses unnormalized coordinates, that sampler must not be used with any of the SPIR-V OpImageSample* or OpImageSparseSample* instructions with ImplicitLod, Dref or Proj in their name, in any shader stage
+
+VUID-vkCmdDraw-None-02704
+If the VkPipeline object bound to the pipeline bind point used by this command accesses a VkSampler object that uses unnormalized coordinates, that sampler must not be used with any of the SPIR-V OpImageSample* or OpImageSparseSample* instructions that includes a LOD bias or any offset values, in any shader stage
+
+VUID-vkCmdDraw-None-02705
+If the robust buffer access feature is not enabled, and if the VkPipeline object bound to the pipeline bind point used by this command accesses a uniform buffer, it must not access values outside of the range of the buffer as specified in the descriptor set bound to the same pipeline bind point
+
+VUID-vkCmdDraw-None-02706
+If the robust buffer access feature is not enabled, and if the VkPipeline object bound to the pipeline bind point used by this command accesses a storage buffer, it must not access values outside of the range of the buffer as specified in the descriptor set bound to the same pipeline bind point
+
+VUID-vkCmdDraw-commandBuffer-02707
+If commandBuffer is an unprotected command buffer, any resource accessed by the VkPipeline object bound to the pipeline bind point used by this command must not be a protected resource
+
+VUID-vkCmdDraw-renderPass-02684
+The current render pass must be compatible with the renderPass member of the VkGraphicsPipelineCreateInfo structure specified when creating the VkPipeline bound to VK_PIPELINE_BIND_POINT_GRAPHICS.
+
+VUID-vkCmdDraw-subpass-02685
+The subpass index of the current render pass must be equal to the subpass member of the VkGraphicsPipelineCreateInfo structure specified when creating the VkPipeline bound to VK_PIPELINE_BIND_POINT_GRAPHICS.
+
+VUID-vkCmdDraw-None-02686
+Every input attachment used by the current subpass must be bound to the pipeline via a descriptor set
+
+VUID-vkCmdDraw-None-02687
+Image subresources used as attachments in the current render pass must not be accessed in any way other than as an attachment by this command.
+
+VUID-vkCmdDraw-maxMultiviewInstanceIndex-02688
+If the draw is recorded in a render pass instance with multiview enabled, the maximum instance index must be less than or equal to VkPhysicalDeviceMultiviewProperties::maxMultiviewInstanceIndex.
+
+VUID-vkCmdDraw-sampleLocationsEnable-02689
+If the bound graphics pipeline was created with VkPipelineSampleLocationsStateCreateInfoEXT::sampleLocationsEnable set to VK_TRUE and the current subpass has a depth/stencil attachment, then that attachment must have been created with the VK_IMAGE_CREATE_SAMPLE_LOCATIONS_COMPATIBLE_DEPTH_BIT_EXT bit set
+
+VUID-vkCmdDraw-commandBuffer-02712
+If commandBuffer is a protected command buffer, any resource written to by the VkPipeline object bound to the pipeline bind point used by this command must not be an unprotected resource
+
+VUID-vkCmdDraw-commandBuffer-02713
+If commandBuffer is a protected command buffer, pipeline stages other than the framebuffer-space and compute stages in the VkPipeline object bound to the pipeline bind point must not write to any resource
+
+VUID-vkCmdDraw-None-02720
+All vertex input bindings accessed via vertex input variables declared in the vertex shader entry point’s interface must have valid buffers bound
+
+VUID-vkCmdDraw-None-02721
+For a given vertex buffer binding, any attribute data fetched must be entirely contained within the corresponding vertex buffer binding, as described in [fxvertex-input]
+
+Valid Usage (Implicit)
+VUID-vkCmdDraw-commandBuffer-parameter
+commandBuffer must be a valid VkCommandBuffer handle
+
+VUID-vkCmdDraw-commandBuffer-recording
+commandBuffer must be in the recording state
+
+VUID-vkCmdDraw-commandBuffer-cmdpool
+The VkCommandPool that commandBuffer was allocated from must support graphics operations
+
+VUID-vkCmdDraw-renderpass
+This command must only be called inside of a render pass instance
+
+Host Synchronization
+Host access to commandBuffer must be externally synchronized
+
+Host access to the VkCommandPool that commandBuffer was allocated from must be externally synchronized
+
+Command Properties
+Command Buffer Levels	Render Pass Scope	Supported Queue Types	Pipeline Type
+Primary
+Secondary
+
+Inside
+
+Graphics
+
+Graphics
+
+See Also

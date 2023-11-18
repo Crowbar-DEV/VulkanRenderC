@@ -1,0 +1,92 @@
+vkQueuePresentKHR - Queue an image for presentation
+
+C Specification
+After queueing all rendering commands and transitioning the image to the correct layout, to queue an image for presentation, call:
+
+VkResult vkQueuePresentKHR(
+    VkQueue                                     queue,
+    const VkPresentInfoKHR*                     pPresentInfo);
+Parameters
+queue is a queue that is capable of presentation to the target surface’s platform on the same device as the image’s swapchain.
+
+pPresentInfo is a pointer to a VkPresentInfoKHR structure specifying parameters of the presentation.
+
+Description
+Note
+There is no requirement for an application to present images in the same order that they were acquired - applications can arbitrarily present any image that is currently acquired.
+
+Valid Usage
+VUID-vkQueuePresentKHR-pSwapchains-01292
+Each element of pSwapchains member of pPresentInfo must be a swapchain that is created for a surface for which presentation is supported from queue as determined using a call to vkGetPhysicalDeviceSurfaceSupportKHR
+
+VUID-vkQueuePresentKHR-pSwapchains-01293
+If more than one member of pSwapchains was created from a display surface, all display surfaces referenced that refer to the same display must use the same display mode
+
+VUID-vkQueuePresentKHR-pWaitSemaphores-01294
+When a semaphore wait operation referring to a binary semaphore defined by the elements of the pWaitSemaphores member of pPresentInfo executes on queue, there must be no other queues waiting on the same semaphore.
+
+VUID-vkQueuePresentKHR-pWaitSemaphores-01295
+All elements of the pWaitSemaphores member of pPresentInfo must be semaphores that are signaled, or have semaphore signal operations previously submitted for execution.
+
+VUID-vkQueuePresentKHR-pWaitSemaphores-03267
+All elements of the pWaitSemaphores member of pPresentInfo must be created with a VkSemaphoreType of VK_SEMAPHORE_TYPE_BINARY.
+
+VUID-vkQueuePresentKHR-pWaitSemaphores-03268
+All elements of the pWaitSemaphores member of pPresentInfo must reference a semaphore signal operation that has been submitted for execution and any semaphore signal operations on which it depends (if any) must have also been submitted for execution.
+
+Any writes to memory backing the images referenced by the pImageIndices and pSwapchains members of pPresentInfo, that are available before vkQueuePresentKHR is executed, are automatically made visible to the read access performed by the presentation engine. This automatic visibility operation for an image happens-after the semaphore signal operation, and happens-before the presentation engine accesses the image.
+
+Queueing an image for presentation defines a set of queue operations, including waiting on the semaphores and submitting a presentation request to the presentation engine. However, the scope of this set of queue operations does not include the actual processing of the image by the presentation engine.
+
+If vkQueuePresentKHR fails to enqueue the corresponding set of queue operations, it may return VK_ERROR_OUT_OF_HOST_MEMORY or VK_ERROR_OUT_OF_DEVICE_MEMORY. If it does, the implementation must ensure that the state and contents of any resources or synchronization primitives referenced is unaffected by the call or its failure.
+
+If vkQueuePresentKHR fails in such a way that the implementation is unable to make that guarantee, the implementation must return VK_ERROR_DEVICE_LOST.
+
+However, if the presentation request is rejected by the presentation engine with an error VK_ERROR_OUT_OF_DATE_KHR or VK_ERROR_SURFACE_LOST_KHR, the set of queue operations are still considered to be enqueued and thus any semaphore wait operation specified in VkPresentInfoKHR will execute when the corresponding queue operation is complete.
+
+If any swapchain member of pPresentInfo was created with VK_FULL_SCREEN_EXCLUSIVE_APPLICATION_CONTROLLED_EXT, VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT will be returned if that swapchain does not have exclusive full-screen access, possibly for implementation-specific reasons outside of the application’s control.
+
+Valid Usage (Implicit)
+VUID-vkQueuePresentKHR-queue-parameter
+queue must be a valid VkQueue handle
+
+VUID-vkQueuePresentKHR-pPresentInfo-parameter
+pPresentInfo must be a valid pointer to a valid VkPresentInfoKHR structure
+
+Host Synchronization
+Host access to queue must be externally synchronized
+
+Host access to pPresentInfo.pWaitSemaphores[] must be externally synchronized
+
+Host access to pPresentInfo.pSwapchains[] must be externally synchronized
+
+Command Properties
+Command Buffer Levels	Render Pass Scope	Supported Queue Types	Pipeline Type
+-
+
+-
+
+Any
+
+-
+
+Return Codes
+Success
+VK_SUCCESS
+
+VK_SUBOPTIMAL_KHR
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_DEVICE_LOST
+
+VK_ERROR_OUT_OF_DATE_KHR
+
+VK_ERROR_SURFACE_LOST_KHR
+
+VK_ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT
+
+See Also

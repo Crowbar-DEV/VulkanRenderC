@@ -1,0 +1,16 @@
+VkSurfaceFormatKHR - Structure describing a supported swapchain format-color space pair
+
+C Specification
+The VkSurfaceFormatKHR structure is defined as:
+
+typedef struct VkSurfaceFormatKHR {
+    VkFormat           format;
+    VkColorSpaceKHR    colorSpace;
+} VkSurfaceFormatKHR;
+Members
+format is a VkFormat that is compatible with the specified surface.
+
+colorSpace is a presentation VkColorSpaceKHR that is compatible with the surface.
+
+Description
+See Also

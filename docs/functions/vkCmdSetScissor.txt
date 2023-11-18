@@ -1,0 +1,77 @@
+vkCmdSetScissor - Set the dynamic scissor rectangles on a command buffer
+
+C Specification
+The scissor test determines if a fragment’s framebuffer coordinates (xf,yf) lie within the scissor rectangle corresponding to the viewport index (see Controlling the Viewport) used by the primitive that generated the fragment. If the pipeline state object is created without VK_DYNAMIC_STATE_SCISSOR enabled then the scissor rectangles are set by the VkPipelineViewportStateCreateInfo state of the pipeline state object. Otherwise, to dynamically set the scissor rectangles call:
+
+void vkCmdSetScissor(
+    VkCommandBuffer                             commandBuffer,
+    uint32_t                                    firstScissor,
+    uint32_t                                    scissorCount,
+    const VkRect2D*                             pScissors);
+Parameters
+commandBuffer is the command buffer into which the command will be recorded.
+
+firstScissor is the index of the first scissor whose state is updated by the command.
+
+scissorCount is the number of scissors whose rectangles are updated by the command.
+
+pScissors is a pointer to an array of VkRect2D structures defining scissor rectangles.
+
+Description
+The scissor rectangles taken from element i of pScissors replace the current state for the scissor index firstScissor + i, for i in [0, scissorCount).
+
+Each scissor rectangle is described by a VkRect2D structure, with the offset.x and offset.y values determining the upper left corner of the scissor rectangle, and the extent.width and extent.height values determining the size in pixels.
+
+Valid Usage
+VUID-vkCmdSetScissor-firstScissor-00591
+firstScissor must be less than VkPhysicalDeviceLimits::maxViewports
+
+VUID-vkCmdSetScissor-firstScissor-00592
+The sum of firstScissor and scissorCount must be between 1 and VkPhysicalDeviceLimits::maxViewports, inclusive
+
+VUID-vkCmdSetScissor-firstScissor-00593
+If the multiple viewports feature is not enabled, firstScissor must be 0
+
+VUID-vkCmdSetScissor-scissorCount-00594
+If the multiple viewports feature is not enabled, scissorCount must be 1
+
+VUID-vkCmdSetScissor-x-00595
+The x and y members of offset member of any element of pScissors must be greater than or equal to 0
+
+VUID-vkCmdSetScissor-offset-00596
+Evaluation of (offset.x + extent.width) must not cause a signed integer addition overflow for any element of pScissors
+
+VUID-vkCmdSetScissor-offset-00597
+Evaluation of (offset.y + extent.height) must not cause a signed integer addition overflow for any element of pScissors
+
+Valid Usage (Implicit)
+VUID-vkCmdSetScissor-commandBuffer-parameter
+commandBuffer must be a valid VkCommandBuffer handle
+
+VUID-vkCmdSetScissor-pScissors-parameter
+pScissors must be a valid pointer to an array of scissorCount VkRect2D structures
+
+VUID-vkCmdSetScissor-commandBuffer-recording
+commandBuffer must be in the recording state
+
+VUID-vkCmdSetScissor-commandBuffer-cmdpool
+The VkCommandPool that commandBuffer was allocated from must support graphics operations
+
+VUID-vkCmdSetScissor-scissorCount-arraylength
+scissorCount must be greater than 0
+
+Host Synchronization
+Host access to commandBuffer must be externally synchronized
+
+Host access to the VkCommandPool that commandBuffer was allocated from must be externally synchronized
+
+Command Properties
+Command Buffer Levels	Render Pass Scope	Supported Queue Types	Pipeline Type
+Primary
+Secondary
+
+Both
+
+Graphics
+
+See Also

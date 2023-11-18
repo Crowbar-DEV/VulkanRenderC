@@ -1,0 +1,66 @@
+vkCmdSetViewport - Set the viewport on a command buffer
+
+C Specification
+If the bound pipeline state object was not created with the VK_DYNAMIC_STATE_VIEWPORT dynamic state enabled, viewport transformation parameters are specified using the pViewports member of VkPipelineViewportStateCreateInfo in the pipeline state object. If the pipeline state object was created with the VK_DYNAMIC_STATE_VIEWPORT dynamic state enabled, the viewport transformation parameters are dynamically set and changed with the command:
+
+void vkCmdSetViewport(
+    VkCommandBuffer                             commandBuffer,
+    uint32_t                                    firstViewport,
+    uint32_t                                    viewportCount,
+    const VkViewport*                           pViewports);
+Parameters
+commandBuffer is the command buffer into which the command will be recorded.
+
+firstViewport is the index of the first viewport whose parameters are updated by the command.
+
+viewportCount is the number of viewports whose parameters are updated by the command.
+
+pViewports is a pointer to an array of VkViewport structures specifying viewport parameters.
+
+Description
+The viewport parameters taken from element i of pViewports replace the current state for the viewport index firstViewport + i, for i in [0, viewportCount).
+
+Valid Usage
+VUID-vkCmdSetViewport-firstViewport-01222
+firstViewport must be less than VkPhysicalDeviceLimits::maxViewports
+
+VUID-vkCmdSetViewport-firstViewport-01223
+The sum of firstViewport and viewportCount must be between 1 and VkPhysicalDeviceLimits::maxViewports, inclusive
+
+VUID-vkCmdSetViewport-firstViewport-01224
+If the multiple viewports feature is not enabled, firstViewport must be 0
+
+VUID-vkCmdSetViewport-viewportCount-01225
+If the multiple viewports feature is not enabled, viewportCount must be 1
+
+Valid Usage (Implicit)
+VUID-vkCmdSetViewport-commandBuffer-parameter
+commandBuffer must be a valid VkCommandBuffer handle
+
+VUID-vkCmdSetViewport-pViewports-parameter
+pViewports must be a valid pointer to an array of viewportCount valid VkViewport structures
+
+VUID-vkCmdSetViewport-commandBuffer-recording
+commandBuffer must be in the recording state
+
+VUID-vkCmdSetViewport-commandBuffer-cmdpool
+The VkCommandPool that commandBuffer was allocated from must support graphics operations
+
+VUID-vkCmdSetViewport-viewportCount-arraylength
+viewportCount must be greater than 0
+
+Host Synchronization
+Host access to commandBuffer must be externally synchronized
+
+Host access to the VkCommandPool that commandBuffer was allocated from must be externally synchronized
+
+Command Properties
+Command Buffer Levels	Render Pass Scope	Supported Queue Types	Pipeline Type
+Primary
+Secondary
+
+Both
+
+Graphics
+
+See Also

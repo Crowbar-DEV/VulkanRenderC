@@ -1,0 +1,56 @@
+VkInstanceCreateInfo - Structure specifying parameters of a newly created instance
+
+C Specification
+The VkInstanceCreateInfo structure is defined as:
+
+typedef struct VkInstanceCreateInfo {
+    VkStructureType             sType;
+    const void*                 pNext;
+    VkInstanceCreateFlags       flags;
+    const VkApplicationInfo*    pApplicationInfo;
+    uint32_t                    enabledLayerCount;
+    const char* const*          ppEnabledLayerNames;
+    uint32_t                    enabledExtensionCount;
+    const char* const*          ppEnabledExtensionNames;
+} VkInstanceCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is reserved for future use.
+
+pApplicationInfo is NULL or a pointer to a VkApplicationInfo structure. If not NULL, this information helps implementations recognize behavior inherent to classes of applications. VkApplicationInfo is defined in detail below.
+
+enabledLayerCount is the number of global layers to enable.
+
+ppEnabledLayerNames is a pointer to an array of enabledLayerCount null-terminated UTF-8 strings containing the names of layers to enable for the created instance. See the https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#extendingvulkan-layers section for further details.
+
+enabledExtensionCount is the number of global extensions to enable.
+
+ppEnabledExtensionNames is a pointer to an array of enabledExtensionCount null-terminated UTF-8 strings containing the names of extensions to enable.
+
+Description
+Valid Usage (Implicit)
+VUID-VkInstanceCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
+
+VUID-VkInstanceCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkDebugReportCallbackCreateInfoEXT, VkDebugUtilsMessengerCreateInfoEXT, VkValidationFeaturesEXT, or VkValidationFlagsEXT
+
+VUID-VkInstanceCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkInstanceCreateInfo-flags-zerobitmask
+flags must be 0
+
+VUID-VkInstanceCreateInfo-pApplicationInfo-parameter
+If pApplicationInfo is not NULL, pApplicationInfo must be a valid pointer to a valid VkApplicationInfo structure
+
+VUID-VkInstanceCreateInfo-ppEnabledLayerNames-parameter
+If enabledLayerCount is not 0, ppEnabledLayerNames must be a valid pointer to an array of enabledLayerCount null-terminated UTF-8 strings
+
+VUID-VkInstanceCreateInfo-ppEnabledExtensionNames-parameter
+If enabledExtensionCount is not 0, ppEnabledExtensionNames must be a valid pointer to an array of enabledExtensionCount null-terminated UTF-8 strings
+
+See Also

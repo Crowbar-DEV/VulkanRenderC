@@ -1,0 +1,51 @@
+vkEndCommandBuffer - Finish recording a command buffer
+
+C Specification
+To complete recording of a command buffer, call:
+
+VkResult vkEndCommandBuffer(
+    VkCommandBuffer                             commandBuffer);
+Parameters
+commandBuffer is the command buffer to complete recording.
+
+Description
+If there was an error during recording, the application will be notified by an unsuccessful return code returned by vkEndCommandBuffer. If the application wishes to further use the command buffer, the command buffer must be reset. The command buffer must have been in the recording state, and is moved to the executable state.
+
+Valid Usage
+VUID-vkEndCommandBuffer-commandBuffer-00059
+commandBuffer must be in the recording state.
+
+VUID-vkEndCommandBuffer-commandBuffer-00060
+If commandBuffer is a primary command buffer, there must not be an active render pass instance
+
+VUID-vkEndCommandBuffer-commandBuffer-00061
+All queries made active during the recording of commandBuffer must have been made inactive
+
+VUID-vkEndCommandBuffer-None-01978
+Conditional rendering must not be active
+
+VUID-vkEndCommandBuffer-commandBuffer-01815
+If commandBuffer is a secondary command buffer, there must not be an outstanding vkCmdBeginDebugUtilsLabelEXT command recorded to commandBuffer that has not previously been ended by a call to vkCmdEndDebugUtilsLabelEXT.
+
+VUID-vkEndCommandBuffer-commandBuffer-00062
+If commandBuffer is a secondary command buffer, there must not be an outstanding vkCmdDebugMarkerBeginEXT command recorded to commandBuffer that has not previously been ended by a call to vkCmdDebugMarkerEndEXT.
+
+Valid Usage (Implicit)
+VUID-vkEndCommandBuffer-commandBuffer-parameter
+commandBuffer must be a valid VkCommandBuffer handle
+
+Host Synchronization
+Host access to commandBuffer must be externally synchronized
+
+Host access to the VkCommandPool that commandBuffer was allocated from must be externally synchronized
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

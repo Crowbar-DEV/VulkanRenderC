@@ -1,0 +1,45 @@
+VkCommandBufferBeginInfo - Structure specifying a command buffer begin operation
+
+C Specification
+The VkCommandBufferBeginInfo structure is defined as:
+
+typedef struct VkCommandBufferBeginInfo {
+    VkStructureType                          sType;
+    const void*                              pNext;
+    VkCommandBufferUsageFlags                flags;
+    const VkCommandBufferInheritanceInfo*    pInheritanceInfo;
+} VkCommandBufferBeginInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is a bitmask of VkCommandBufferUsageFlagBits specifying usage behavior for the command buffer.
+
+pInheritanceInfo is a pointer to a VkCommandBufferInheritanceInfo structure, used if commandBuffer is a secondary command buffer. If this is a primary command buffer, then this value is ignored.
+
+Description
+Valid Usage
+VUID-VkCommandBufferBeginInfo-flags-00053
+If flags contains VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, the renderPass member of pInheritanceInfo must be a valid VkRenderPass
+
+VUID-VkCommandBufferBeginInfo-flags-00054
+If flags contains VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, the subpass member of pInheritanceInfo must be a valid subpass index within the renderPass member of pInheritanceInfo
+
+VUID-VkCommandBufferBeginInfo-flags-00055
+If flags contains VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT, the framebuffer member of pInheritanceInfo must be either VK_NULL_HANDLE, or a valid VkFramebuffer that is compatible with the renderPass member of pInheritanceInfo
+
+Valid Usage (Implicit)
+VUID-VkCommandBufferBeginInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
+
+VUID-VkCommandBufferBeginInfo-pNext-pNext
+pNext must be NULL or a pointer to a valid instance of VkDeviceGroupCommandBufferBeginInfo
+
+VUID-VkCommandBufferBeginInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkCommandBufferBeginInfo-flags-parameter
+flags must be a valid combination of VkCommandBufferUsageFlagBits values
+
+See Also

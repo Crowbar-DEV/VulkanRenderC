@@ -1,0 +1,42 @@
+VkPipelineDynamicStateCreateInfo - Structure specifying parameters of a newly created pipeline dynamic state
+
+C Specification
+The VkPipelineDynamicStateCreateInfo structure is defined as:
+
+typedef struct VkPipelineDynamicStateCreateInfo {
+    VkStructureType                      sType;
+    const void*                          pNext;
+    VkPipelineDynamicStateCreateFlags    flags;
+    uint32_t                             dynamicStateCount;
+    const VkDynamicState*                pDynamicStates;
+} VkPipelineDynamicStateCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is reserved for future use.
+
+dynamicStateCount is the number of elements in the pDynamicStates array.
+
+pDynamicStates is a pointer to an array of VkDynamicState values specifying which pieces of pipeline state will use the values from dynamic state commands rather than from pipeline state creation info.
+
+Description
+Valid Usage
+VUID-VkPipelineDynamicStateCreateInfo-pDynamicStates-01442
+Each element of pDynamicStates must be unique
+
+Valid Usage (Implicit)
+VUID-VkPipelineDynamicStateCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+
+VUID-VkPipelineDynamicStateCreateInfo-pNext-pNext
+pNext must be NULL
+
+VUID-VkPipelineDynamicStateCreateInfo-flags-zerobitmask
+flags must be 0
+
+VUID-VkPipelineDynamicStateCreateInfo-pDynamicStates-parameter
+If dynamicStateCount is not 0, pDynamicStates must be a valid pointer to an array of dynamicStateCount valid VkDynamicState values
+
+See Also

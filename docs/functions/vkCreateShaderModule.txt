@@ -1,0 +1,49 @@
+vkCreateShaderModule - Creates a new shader module object
+
+C Specification
+To create a shader module, call:
+
+VkResult vkCreateShaderModule(
+    VkDevice                                    device,
+    const VkShaderModuleCreateInfo*             pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkShaderModule*                             pShaderModule);
+Parameters
+device is the logical device that creates the shader module.
+
+pCreateInfo is a pointer to a VkShaderModuleCreateInfo structure.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+pShaderModule is a pointer to a VkShaderModule handle in which the resulting shader module object is returned.
+
+Description
+Once a shader module has been created, any entry points it contains can be used in pipeline shader stages as described in Compute Pipelines and Graphics Pipelines.
+
+If the shader stage fails to compile VK_ERROR_INVALID_SHADER_NV will be generated and the compile log will be reported back to the application by https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_EXT_debug_report if enabled.
+
+Valid Usage (Implicit)
+VUID-vkCreateShaderModule-device-parameter
+device must be a valid VkDevice handle
+
+VUID-vkCreateShaderModule-pCreateInfo-parameter
+pCreateInfo must be a valid pointer to a valid VkShaderModuleCreateInfo structure
+
+VUID-vkCreateShaderModule-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateShaderModule-pShaderModule-parameter
+pShaderModule must be a valid pointer to a VkShaderModule handle
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_INVALID_SHADER_NV
+
+See Also

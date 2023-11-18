@@ -1,0 +1,89 @@
+VkViewport - Structure specifying a viewport
+
+C Specification
+The VkViewport structure is defined as:
+
+typedef struct VkViewport {
+    float    x;
+    float    y;
+    float    width;
+    float    height;
+    float    minDepth;
+    float    maxDepth;
+} VkViewport;
+Members
+x and y are the viewport’s upper left corner (x,y).
+
+width and height are the viewport’s width and height, respectively.
+
+minDepth and maxDepth are the depth range for the viewport. It is valid for minDepth to be greater than or equal to maxDepth.
+
+Description
+The framebuffer depth coordinate zf may be represented using either a fixed-point or floating-point representation. However, a floating-point representation must be used if the depth/stencil attachment has a floating-point depth component. If an m-bit fixed-point representation is used, we assume that it represents each value 
+�
+2
+�
+−
+1
+2 
+m
+ −1
+k
+​
+ , where k ∈ { 0, 1, …​, 2m-1 }, as k (e.g. 1.0 is represented in binary as a string of all ones).
+
+The viewport parameters shown in the above equations are found from these values as
+
+ox = x + width / 2
+
+oy = y + height / 2
+
+oz = minDepth
+
+px = width
+
+py = height
+
+pz = maxDepth - minDepth.
+
+The application can specify a negative term for height, which has the effect of negating the y coordinate in clip space before performing the transform. When using a negative height, the application should also adjust the y value to point to the lower left corner of the viewport instead of the upper left corner. Using the negative height allows the application to avoid having to negate the y component of the Position output from the last vertex processing stage in shaders that also target other graphics APIs.
+
+The width and height of the implementation-dependent maximum viewport dimensions must be greater than or equal to the width and height of the largest image which can be created and attached to a framebuffer.
+
+The floating-point viewport bounds are represented with an implementation-dependent precision.
+
+Valid Usage
+VUID-VkViewport-width-01770
+width must be greater than 0.0
+
+VUID-VkViewport-width-01771
+width must be less than or equal to VkPhysicalDeviceLimits::maxViewportDimensions[0]
+
+VUID-VkViewport-height-01773
+The absolute value of height must be less than or equal to VkPhysicalDeviceLimits::maxViewportDimensions[1]
+
+VUID-VkViewport-x-01774
+x must be greater than or equal to viewportBoundsRange[0]
+
+VUID-VkViewport-x-01232
+(x + width) must be less than or equal to viewportBoundsRange[1]
+
+VUID-VkViewport-y-01775
+y must be greater than or equal to viewportBoundsRange[0]
+
+VUID-VkViewport-y-01776
+y must be less than or equal to viewportBoundsRange[1]
+
+VUID-VkViewport-y-01777
+(y + height) must be greater than or equal to viewportBoundsRange[0]
+
+VUID-VkViewport-y-01233
+(y + height) must be less than or equal to viewportBoundsRange[1]
+
+VUID-VkViewport-minDepth-01234
+Unless https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_EXT_depth_range_unrestricted extension is enabled minDepth must be between 0.0 and 1.0, inclusive
+
+VUID-VkViewport-maxDepth-01235
+Unless https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VK_EXT_depth_range_unrestricted extension is enabled maxDepth must be between 0.0 and 1.0, inclusive
+
+See Also

@@ -1,0 +1,78 @@
+VkPipelineViewportStateCreateInfo - Structure specifying parameters of a newly created pipeline viewport state
+
+C Specification
+The VkPipelineViewportStateCreateInfo structure is defined as:
+
+typedef struct VkPipelineViewportStateCreateInfo {
+    VkStructureType                       sType;
+    const void*                           pNext;
+    VkPipelineViewportStateCreateFlags    flags;
+    uint32_t                              viewportCount;
+    const VkViewport*                     pViewports;
+    uint32_t                              scissorCount;
+    const VkRect2D*                       pScissors;
+} VkPipelineViewportStateCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is reserved for future use.
+
+viewportCount is the number of viewports used by the pipeline.
+
+pViewports is a pointer to an array of VkViewport structures, defining the viewport transforms. If the viewport state is dynamic, this member is ignored.
+
+scissorCount is the number of scissors and must match the number of viewports.
+
+pScissors is a pointer to an array of VkRect2D structures defining the rectangular bounds of the scissor for the corresponding viewport. If the scissor state is dynamic, this member is ignored.
+
+Description
+Valid Usage
+VUID-VkPipelineViewportStateCreateInfo-viewportCount-01216
+If the multiple viewports feature is not enabled, viewportCount must be 1
+
+VUID-VkPipelineViewportStateCreateInfo-scissorCount-01217
+If the multiple viewports feature is not enabled, scissorCount must be 1
+
+VUID-VkPipelineViewportStateCreateInfo-viewportCount-01218
+viewportCount must be between 1 and VkPhysicalDeviceLimits::maxViewports, inclusive
+
+VUID-VkPipelineViewportStateCreateInfo-scissorCount-01219
+scissorCount must be between 1 and VkPhysicalDeviceLimits::maxViewports, inclusive
+
+VUID-VkPipelineViewportStateCreateInfo-scissorCount-01220
+scissorCount and viewportCount must be identical
+
+VUID-VkPipelineViewportStateCreateInfo-x-02821
+The x and y members of offset member of any element of pScissors must be greater than or equal to 0
+
+VUID-VkPipelineViewportStateCreateInfo-offset-02822
+Evaluation of (offset.x + extent.width) must not cause a signed integer addition overflow for any element of pScissors
+
+VUID-VkPipelineViewportStateCreateInfo-offset-02823
+Evaluation of (offset.y + extent.height) must not cause a signed integer addition overflow for any element of pScissors
+
+VUID-VkPipelineViewportStateCreateInfo-viewportWScalingEnable-01726
+If the viewportWScalingEnable member of a VkPipelineViewportWScalingStateCreateInfoNV structure included in the pNext chain is VK_TRUE, the viewportCount member of the VkPipelineViewportWScalingStateCreateInfoNV structure must be equal to viewportCount
+
+Valid Usage (Implicit)
+VUID-VkPipelineViewportStateCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+
+VUID-VkPipelineViewportStateCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkPipelineViewportCoarseSampleOrderStateCreateInfoNV, VkPipelineViewportExclusiveScissorStateCreateInfoNV, VkPipelineViewportShadingRateImageStateCreateInfoNV, VkPipelineViewportSwizzleStateCreateInfoNV, or VkPipelineViewportWScalingStateCreateInfoNV
+
+VUID-VkPipelineViewportStateCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkPipelineViewportStateCreateInfo-flags-zerobitmask
+flags must be 0
+
+VUID-VkPipelineViewportStateCreateInfo-viewportCount-arraylength
+viewportCount must be greater than 0
+
+VUID-VkPipelineViewportStateCreateInfo-scissorCount-arraylength
+scissorCount must be greater than 0
+
+See Also

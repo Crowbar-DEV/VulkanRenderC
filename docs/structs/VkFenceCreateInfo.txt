@@ -1,0 +1,32 @@
+VkFenceCreateInfo - Structure specifying parameters of a newly created fence
+
+C Specification
+The VkFenceCreateInfo structure is defined as:
+
+typedef struct VkFenceCreateInfo {
+    VkStructureType       sType;
+    const void*           pNext;
+    VkFenceCreateFlags    flags;
+} VkFenceCreateInfo;
+Members
+sType is the type of this structure.
+
+pNext is NULL or a pointer to an extension-specific structure.
+
+flags is a bitmask of VkFenceCreateFlagBits specifying the initial state and behavior of the fence.
+
+Description
+Valid Usage (Implicit)
+VUID-VkFenceCreateInfo-sType-sType
+sType must be VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
+
+VUID-VkFenceCreateInfo-pNext-pNext
+Each pNext member of any structure (including this one) in the pNext chain must be either NULL or a pointer to a valid instance of VkExportFenceCreateInfo or VkExportFenceWin32HandleInfoKHR
+
+VUID-VkFenceCreateInfo-sType-unique
+The sType value of each struct in the pNext chain must be unique
+
+VUID-VkFenceCreateInfo-flags-parameter
+flags must be a valid combination of VkFenceCreateFlagBits values
+
+See Also

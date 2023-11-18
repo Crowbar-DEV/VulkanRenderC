@@ -1,0 +1,51 @@
+vkCreateInstance - Create a new Vulkan instance
+
+C Specification
+To create an instance object, call:
+
+VkResult vkCreateInstance(
+    const VkInstanceCreateInfo*                 pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkInstance*                                 pInstance);
+Parameters
+pCreateInfo is a pointer to a VkInstanceCreateInfo structure controlling creation of the instance.
+
+pAllocator controls host memory allocation as described in the Memory Allocation chapter.
+
+pInstance points a VkInstance handle in which the resulting instance is returned.
+
+Description
+vkCreateInstance verifies that the requested layers exist. If not, vkCreateInstance will return VK_ERROR_LAYER_NOT_PRESENT. Next vkCreateInstance verifies that the requested extensions are supported (e.g. in the implementation or in any enabled instance layer) and if any requested extension is not supported, vkCreateInstance must return VK_ERROR_EXTENSION_NOT_PRESENT. After verifying and enabling the instance layers and extensions the VkInstance object is created and returned to the application. If a requested extension is only supported by a layer, both the layer and the extension need to be specified at vkCreateInstance time for the creation to succeed.
+
+Valid Usage
+VUID-vkCreateInstance-ppEnabledExtensionNames-01388
+All required extensions for each extension in the VkInstanceCreateInfo::ppEnabledExtensionNames list must also be present in that list.
+
+Valid Usage (Implicit)
+VUID-vkCreateInstance-pCreateInfo-parameter
+pCreateInfo must be a valid pointer to a valid VkInstanceCreateInfo structure
+
+VUID-vkCreateInstance-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateInstance-pInstance-parameter
+pInstance must be a valid pointer to a VkInstance handle
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_INITIALIZATION_FAILED
+
+VK_ERROR_LAYER_NOT_PRESENT
+
+VK_ERROR_EXTENSION_NOT_PRESENT
+
+VK_ERROR_INCOMPATIBLE_DRIVER
+
+See Also

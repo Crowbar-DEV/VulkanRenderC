@@ -1,0 +1,51 @@
+vkEnumerateDeviceExtensionProperties - Returns properties of available physical device extensions
+
+C Specification
+To query the extensions available to a given physical device, call:
+
+VkResult vkEnumerateDeviceExtensionProperties(
+    VkPhysicalDevice                            physicalDevice,
+    const char*                                 pLayerName,
+    uint32_t*                                   pPropertyCount,
+    VkExtensionProperties*                      pProperties);
+Parameters
+physicalDevice is the physical device that will be queried.
+
+pLayerName is either NULL or a pointer to a null-terminated UTF-8 string naming the layer to retrieve extensions from.
+
+pPropertyCount is a pointer to an integer related to the number of extension properties available or queried, and is treated in the same fashion as the vkEnumerateInstanceExtensionProperties::pPropertyCount parameter.
+
+pProperties is either NULL or a pointer to an array of VkExtensionProperties structures.
+
+Description
+When pLayerName parameter is NULL, only extensions provided by the Vulkan implementation or by implicitly enabled layers are returned. When pLayerName is the name of a layer, the device extensions provided by that layer are returned.
+
+Implementations must not advertise any pair of extensions that cannot be enabled together due to behavioral differences, or any extension that cannot be enabled against the advertised version.
+
+Valid Usage (Implicit)
+VUID-vkEnumerateDeviceExtensionProperties-physicalDevice-parameter
+physicalDevice must be a valid VkPhysicalDevice handle
+
+VUID-vkEnumerateDeviceExtensionProperties-pLayerName-parameter
+If pLayerName is not NULL, pLayerName must be a null-terminated UTF-8 string
+
+VUID-vkEnumerateDeviceExtensionProperties-pPropertyCount-parameter
+pPropertyCount must be a valid pointer to a uint32_t value
+
+VUID-vkEnumerateDeviceExtensionProperties-pProperties-parameter
+If the value referenced by pPropertyCount is not 0, and pProperties is not NULL, pProperties must be a valid pointer to an array of pPropertyCount VkExtensionProperties structures
+
+Return Codes
+Success
+VK_SUCCESS
+
+VK_INCOMPLETE
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+VK_ERROR_LAYER_NOT_PRESENT
+
+See Also
