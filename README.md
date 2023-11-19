@@ -1,5 +1,5 @@
 # VulkanRenderC
-Trying to use vulkan with C, idk why, just bad at C++
+Trying to use vulkan with C, idk why, just bad at C++. Currently using xcb for windowing
 
 # Docs
 if interested, I made a little shell script to generate
