@@ -1,0 +1,115 @@
+
+//Xcb objects
+xcb_connection_t * connection;
+xcb_window_t window;
+xcb_screen_t * screen;
+xcb_atom_t wmProtocols;
+xcb_atom_t wmDeleteWin;
+//Connects to x server using xcb and creates a window.
+//xcb is strange, you connect to the server and then ask for
+//replies by cookies which are just contracts to be given 
+//back to the x server to actually give you the response 
+//data, apparently this can be used to speed up requests
+//by doing a bunch of requests without needing responses
+//and then getting the responses later with the cookies
+//mutates -> (global xcb_connection_t*) connection
+//           (global xcb_window_t)  window;
+//           (global xcb_screen_t*) screen;
+//           (global xcb_atom_t) wmProtocols;
+//           (global xcb_atom_t) wmDeleteWin;)
+void createWindow(){
+    int screenp = 0;
+    connection = xcb_connect(NULL, &screenp);
+
+    if(xcb_connection_has_error(connection)){
+        printf("xcb could not connect to x server");
+        exit(1);
+    }
+
+    xcb_screen_iterator_t iter = xcb_setup_roots_iterator(xcb_get_setup(connection));
+
+    for(int s = screenp; s > 0; s--){
+	    xcb_screen_next(&iter);
+    }
+
+    screen = iter.data;
+
+    window = xcb_generate_id(connection);
+
+    uint32_t eventMask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
+
+    uint32_t * valueList = malloc(sizeof(uint32_t) * 2);
+
+    valueList[0] = screen->black_pixel;
+    valueList[1] = 0;
+
+    xcb_create_window(
+        connection,
+        XCB_COPY_FROM_PARENT,
+        window,
+        screen->root,
+        0,
+        0,
+        500,
+        500,
+        0,
+        XCB_WINDOW_CLASS_INPUT_OUTPUT,
+        screen->root_visual,
+        eventMask,
+        valueList
+    );
+
+    free(valueList);
+
+    xcb_intern_atom_cookie_t wmDeleteCookie = xcb_intern_atom(
+        connection, 0, strlen("WM_DELETE_WINDOW"), "WM_DELETE_WINDOW"
+    );
+    xcb_intern_atom_cookie_t wmProtocolsCookie = xcb_intern_atom(
+        connection, 0, strlen("WM_PROTOCOLS"), "WM_PROTOCOLS"
+    );
+    xcb_intern_atom_reply_t * wmDeleteReply = xcb_intern_atom_reply(
+        connection, wmDeleteCookie, NULL
+    );
+    xcb_intern_atom_reply_t * wmProtocolsReply = xcb_intern_atom_reply(
+        connection, wmProtocolsCookie, NULL
+    );
+
+    wmDeleteWin = wmDeleteReply->atom;
+    wmProtocols = wmProtocolsReply->atom;
+
+    xcb_change_property(
+        connection, XCB_PROP_MODE_REPLACE, window, wmProtocolsReply->atom, 4, 32, 1, &wmDeleteReply->atom
+    );
+
+    xcb_map_window(connection, window);
+    xcb_flush(connection);
+}
+
+//render loop, waits for events from xserver
+//if we have a client message, check if window
+//close was requested, then dip out
+//mutates -> (global xcb_window_t) window
+void renderLoop(){
+    bool running = true;
+    xcb_generic_event_t * event;
+    xcb_client_message_event_t * client_message;
+
+    while (running){
+        event = xcb_wait_for_event(connection);
+
+        switch(event->response_type & ~0x80) {
+            case XCB_CLIENT_MESSAGE: {
+                client_message = (xcb_client_message_event_t *)event;
+
+                if(client_message->data.data32[0] == wmDeleteWin){
+                    running = false;
+                }
+
+                break;
+            }
+        }
+        free(event);
+    }
+
+    xcb_destroy_window(connection, window);
+}
