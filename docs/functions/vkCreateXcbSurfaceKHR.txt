@@ -1,0 +1,43 @@
+vkCreateXcbSurfaceKHR - Create a VkSurfaceKHR object for a X11 window, using the XCB client-side library
+
+C Specification
+To create a VkSurfaceKHR object for an X11 window, using the XCB client-side library, call:
+
+VkResult vkCreateXcbSurfaceKHR(
+    VkInstance                                  instance,
+    const VkXcbSurfaceCreateInfoKHR*            pCreateInfo,
+    const VkAllocationCallbacks*                pAllocator,
+    VkSurfaceKHR*                               pSurface);
+Parameters
+instance is the instance to associate the surface with.
+
+pCreateInfo is a pointer to a VkXcbSurfaceCreateInfoKHR structure containing parameters affecting the creation of the surface object.
+
+pAllocator is the allocator used for host memory allocated for the surface object when there is no more specific allocator available (see Memory Allocation).
+
+pSurface is a pointer to a VkSurfaceKHR handle in which the created surface object is returned.
+
+Description
+Valid Usage (Implicit)
+VUID-vkCreateXcbSurfaceKHR-instance-parameter
+instance must be a valid VkInstance handle
+
+VUID-vkCreateXcbSurfaceKHR-pCreateInfo-parameter
+pCreateInfo must be a valid pointer to a valid VkXcbSurfaceCreateInfoKHR structure
+
+VUID-vkCreateXcbSurfaceKHR-pAllocator-parameter
+If pAllocator is not NULL, pAllocator must be a valid pointer to a valid VkAllocationCallbacks structure
+
+VUID-vkCreateXcbSurfaceKHR-pSurface-parameter
+pSurface must be a valid pointer to a VkSurfaceKHR handle
+
+Return Codes
+Success
+VK_SUCCESS
+
+Failure
+VK_ERROR_OUT_OF_HOST_MEMORY
+
+VK_ERROR_OUT_OF_DEVICE_MEMORY
+
+See Also

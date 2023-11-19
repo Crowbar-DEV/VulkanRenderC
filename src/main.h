@@ -1,0 +1,1 @@
+bool isDeviceSuitable(VkPhysicalDevice device);

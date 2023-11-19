@@ -58,3 +58,4 @@ VkPipelineStageFlags
 VkSubpassDependency
 VkPresentInfoKHR
 VkSwapchainKHR
+VkXcbSurfaceCreateInfoKHR

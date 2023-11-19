@@ -1,0 +1,4 @@
+-I
+/usr/include/vulkan
+-I
+/usr/include/xcb
