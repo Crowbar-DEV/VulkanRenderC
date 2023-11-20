@@ -9,6 +9,12 @@ typedef struct QueueFamilyIndices{
     uint32_t * presentFamily;
 }QueueFamilyIndices;
 
+//struct used to get bytecode from compiled shaders
+typedef struct shaderCode{
+    uint32_t * buffer;
+    uint32_t size;
+}shaderCode;
+
 //struct to hold properties of available swapchain
 typedef struct SwapChainSupportDetails{
     VkSurfaceCapabilitiesKHR capabilities;
@@ -18,6 +24,7 @@ typedef struct SwapChainSupportDetails{
     uint32_t presentModeCount;
 }SwapChainSupportDetails;
 
+void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 bool isDeviceSuitable(VkPhysicalDevice device);
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(VkSurfaceFormatKHR * availableFormats, uint32_t formatCount);
