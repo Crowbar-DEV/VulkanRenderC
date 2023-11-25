@@ -15,6 +15,13 @@ typedef struct shaderCode{
     uint32_t size;
 }shaderCode;
 
+//struct used to define vertex data that will be passed to vertex shader
+typedef struct Vertex{
+    vec2 pos;
+    vec3 color;
+}Vertex;
+
+
 //struct to hold properties of available swapchain
 typedef struct SwapChainSupportDetails{
     VkSurfaceCapabilitiesKHR capabilities;
@@ -24,6 +31,13 @@ typedef struct SwapChainSupportDetails{
     uint32_t presentModeCount;
 }SwapChainSupportDetails;
 
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags propertyFlags, VkBuffer * buffer, VkDeviceMemory * bufferMemory);
+void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+void cleanupSwapChain();
+void createSwapChain();
+void createImageViews();
+void createFramebuffers();
+static void framebufferResizeCallback(GLFWwindow * window, int width, int height);
 void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 bool isDeviceSuitable(VkPhysicalDevice device);

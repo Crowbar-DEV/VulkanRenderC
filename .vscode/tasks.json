@@ -11,6 +11,8 @@
                 "/usr/include/vulkan",
                 "-I",
                 "/usr/include/GLFW",
+                "-I",
+                "/usr/local/include/cglm",
                 "-lvulkan",
                 "-lglfw",
                 "-ldl",

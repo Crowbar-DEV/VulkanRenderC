@@ -1,5 +1,6 @@
 #define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
+#include "cglm/cglm.h"
 
 #include "stdlib.h"
 #include "stdio.h"
@@ -9,6 +10,19 @@
 
 //Yes, this program does have global state, I see no problem
 
+uint32_t vertexCount = 4;
+const Vertex vertices[4] = {
+    {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+};
+
+uint32_t indicesCount = 6;
+const uint16_t indices[6] = {
+    0,1,2,2,3,0
+};
+
 //do we want validation layers?
 const bool enableValidationLayers = true;
 const uint8_t validationLayerCount = 1;
@@ -16,6 +30,16 @@ const char * const validationLayers[50] = {"VK_LAYER_KHRONOS_validation"};
 
 const uint8_t deviceExtensionCount = 1;
 const char * const deviceExtensions[50] = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+const uint16_t WIDTH = 1100;
+const uint16_t HEIGHT = 800;
+
+//max number of frames we allow to be rendered at once
+const uint8_t MAX_FRAMES_IN_FLIGHT = 2;
+uint8_t currentFrame = 0;
+
+//window resize
+bool framebufferResized = false;
 
 //Vulkan objects
 VkInstance instance;
@@ -28,11 +52,20 @@ VkRenderPass renderPass;
 VkPipelineLayout pipelineLayout;
 VkPipeline graphicsPipeline;
 VkCommandPool commandPool;
-VkCommandBuffer commandBuffer;
+VkCommandBuffer * commandBuffers;
+uint8_t commandBufferCount;
 
-VkSemaphore imageAvailableSemaphore;
-VkSemaphore renderFinishedSemaphore;
-VkFence inFlightFence;
+VkBuffer vertexBuffer;
+VkDeviceMemory vertexBufferMemory;
+VkBuffer indexBuffer;
+VkDeviceMemory indexBufferMemory;
+
+VkSemaphore * imageAvailableSemaphores;
+uint8_t imageAvailableSemaphoreCount;
+VkSemaphore * renderFinishedSemaphores;
+uint8_t renderFinishedSemaphoreCount;
+VkFence * inFlightFences;
+uint8_t inFlightFenceCount;
 
 VkSwapchainKHR swapChain;
 uint32_t swapChainImageCount;
@@ -40,11 +73,174 @@ VkImage * swapChainImages;
 VkFormat swapChainImageFormat;
 VkExtent2D swapChainExtent;
 VkImageView * swapChainImageViews;
-
 VkFramebuffer * swapChainFrameBuffers;
 
 //GLFW objects
 GLFWwindow * window;
+
+void createIndexBuffer(){
+    VkDeviceSize bufferSize = sizeof(uint16_t) * indicesCount;
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory); 
+
+    void * data;
+    vkMapMemory(logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, indices, (size_t)bufferSize);
+    vkUnmapMemory(logicalDevice, stagingBufferMemory);
+
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &indexBuffer, &indexBufferMemory);
+
+    copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+    vkDestroyBuffer(logicalDevice, stagingBuffer, NULL);
+    vkFreeMemory(logicalDevice, stagingBufferMemory, NULL);
+}
+
+uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties){
+    VkPhysicalDeviceMemoryProperties memoryProperties;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memoryProperties);
+
+    for(int i = 0; i < memoryProperties.memoryTypeCount; i++){
+        if((typeFilter & (1 << i)) && (memoryProperties.memoryTypes[i].propertyFlags & properties) == properties){
+            return i;
+        }
+    }
+
+    printf("could not find suitable memory type");
+    exit(1);
+}
+
+void createBuffer(VkDeviceSize size, VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags propertyFlags, VkBuffer * buffer, VkDeviceMemory * bufferMemory){
+    VkBufferCreateInfo bufferInfo = {};
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size = size; 
+    bufferInfo.usage = usageFlags;
+    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+    if(vkCreateBuffer(logicalDevice, &bufferInfo, NULL, buffer) != VK_SUCCESS){
+        printf("could not create vertex buffer");
+        exit(1);
+    }
+
+    VkMemoryRequirements memoryRequirements = {};
+    vkGetBufferMemoryRequirements(logicalDevice, *buffer, &memoryRequirements);
+    
+    VkMemoryAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memoryRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memoryRequirements.memoryTypeBits, propertyFlags);
+
+    if(vkAllocateMemory(logicalDevice, &allocInfo, NULL, bufferMemory) != VK_SUCCESS){
+        printf("could not allocate memory for vertex buffer");
+        exit(1);
+    }
+
+    vkBindBufferMemory(logicalDevice, *buffer, *bufferMemory, 0);
+}
+
+void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size){
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    VkBufferCopy copyRegion = {};
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size = size;
+
+    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(graphicsQueue);
+
+    vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
+}
+
+void createVertexBuffer(){
+    VkDeviceSize bufferSize = sizeof(Vertex) * vertexCount;
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory);
+    
+    void * data;
+    vkMapMemory(logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, vertices, (size_t)bufferSize);
+    vkUnmapMemory(logicalDevice, stagingBufferMemory);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vertexBuffer, &vertexBufferMemory);
+    copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+    vkDestroyBuffer(logicalDevice, stagingBuffer, NULL);
+    vkFreeMemory(logicalDevice, stagingBufferMemory, NULL);
+}
+
+//Gets binding description for our vertex data
+VkVertexInputBindingDescription getBindingDescription_Vertex(){
+    VkVertexInputBindingDescription bindingDescription;
+    bindingDescription.binding = 0;
+    bindingDescription.stride = sizeof(Vertex);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    return bindingDescription;
+}
+
+//gets a struct that represents the attributes of the binding
+VkVertexInputAttributeDescription * getAttributeDescriptions_Vertex(){
+    //we have two attribute descriptions, (position and color)
+    VkVertexInputAttributeDescription * attributeDescriptions = malloc(sizeof(VkVertexInputAttributeDescription) * 2);
+    memset(attributeDescriptions, 0, sizeof(VkVertexInputAttributeDescription) * 2);
+
+    //attribute description for position attribute
+    attributeDescriptions[0].binding = 0;
+    attributeDescriptions[0].location = 0;
+    attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[0].offset = offsetof(Vertex, pos); 
+
+    //attribute description for color attribute
+    attributeDescriptions[1].binding = 0;
+    attributeDescriptions[1].location = 1;
+    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[1].offset = offsetof(Vertex, color); 
+
+    return attributeDescriptions;
+}
+
+void recreateSwapChain(){
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(window, &width, &height);
+    while (width == 0 || height == 0) {
+        glfwGetFramebufferSize(window, &width, &height);
+        glfwWaitEvents();
+    }
+    vkDeviceWaitIdle(logicalDevice);
+
+    cleanupSwapChain();
+
+    createSwapChain();
+    createImageViews();
+    createFramebuffers();
+}
 
 //wait for previous frame to finish
 //acquire image from swap chain
@@ -52,17 +248,27 @@ GLFWwindow * window;
 //submit recorded command buffer
 //present the swap chain image
 void drawFrame(){
-    vkWaitForFences(logicalDevice, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(logicalDevice, 1, &inFlightFence);
+    vkWaitForFences(logicalDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    vkAcquireNextImageKHR(logicalDevice, swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(logicalDevice, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
-    vkResetCommandBuffer(commandBuffer, 0);
-    recordCommandBuffer(commandBuffer, imageIndex);
+    if(result == VK_ERROR_OUT_OF_DATE_KHR || framebufferResized){
+        framebufferResized = false;
+        recreateSwapChain();
+        return;
+    } else if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
+        printf("could not get next image from swap chain");
+        exit(1);
+    }
 
-    VkSemaphore waitSemaphores[1] = {imageAvailableSemaphore};
-    VkSemaphore signalSemaphores[1] = {renderFinishedSemaphore};
+    vkResetFences(logicalDevice, 1, &inFlightFences[currentFrame]);
+
+    vkResetCommandBuffer(commandBuffers[currentFrame], 0);
+    recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+
+    VkSemaphore waitSemaphores[1] = {imageAvailableSemaphores[currentFrame]};
+    VkSemaphore signalSemaphores[1] = {renderFinishedSemaphores[currentFrame]};
     VkPipelineStageFlags waitStages[1] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
     VkSubmitInfo submitInfo = {};
@@ -71,11 +277,11 @@ void drawFrame(){
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer; 
+    submitInfo.pCommandBuffers = &commandBuffers[currentFrame]; 
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    if(vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFence) != VK_SUCCESS){
+    if(vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS){
         printf("could not submit draw command buffer");
         exit(1);
     }
@@ -90,12 +296,29 @@ void drawFrame(){
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
 
-    vkQueuePresentKHR(presentQueue, &presentInfo);
+    result = vkQueuePresentKHR(presentQueue, &presentInfo);
     
+    if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized){
+        framebufferResized = false;
+        recreateSwapChain();
+    } else if(result != VK_SUCCESS){
+        printf("could not present swap chain image");
+        exit(1);
+    }
+
+    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT; 
 }
 
 //creates needed semaphores and fences
 void createSyncObjects(){
+    imageAvailableSemaphoreCount = MAX_FRAMES_IN_FLIGHT;
+    renderFinishedSemaphoreCount = MAX_FRAMES_IN_FLIGHT;
+    inFlightFenceCount = MAX_FRAMES_IN_FLIGHT;
+
+    imageAvailableSemaphores = malloc(sizeof(VkSemaphore) * imageAvailableSemaphoreCount);
+    renderFinishedSemaphores = malloc(sizeof(VkSemaphore) * renderFinishedSemaphoreCount);
+    inFlightFences = malloc(sizeof(VkFence) * inFlightFenceCount);
+
     VkSemaphoreCreateInfo semaphoreInfo = {};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -103,12 +326,14 @@ void createSyncObjects(){
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    if(vkCreateSemaphore(logicalDevice, &semaphoreInfo, NULL, &imageAvailableSemaphore) != VK_SUCCESS ||
-       vkCreateSemaphore(logicalDevice, &semaphoreInfo, NULL, &renderFinishedSemaphore) != VK_SUCCESS ||
-       vkCreateFence(logicalDevice, &fenceInfo, NULL, &inFlightFence) != VK_SUCCESS){
-        printf("could not create synchronization objects");
-        exit(1);
-       }
+    for(int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++){
+        if(vkCreateSemaphore(logicalDevice, &semaphoreInfo, NULL, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
+        vkCreateSemaphore(logicalDevice, &semaphoreInfo, NULL, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
+        vkCreateFence(logicalDevice, &fenceInfo, NULL, &inFlightFences[i]) != VK_SUCCESS){
+            printf("could not create synchronization objects");
+            exit(1);
+        }
+    }
 }
 
 //record to our command buffer
@@ -145,22 +370,32 @@ void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex){
 
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+    VkBuffer vertexBuffers[] = {vertexBuffer};
+    VkDeviceSize offsets[] = {0};
+
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdDrawIndexed(commandBuffer, indicesCount, 1, 0, 0, 0);
     vkCmdEndRenderPass(commandBuffer);
     if(vkEndCommandBuffer(commandBuffer) != VK_SUCCESS){
         printf("could not record command buffer");
         exit(1);
     }
 }
+
 //commandBuffers are what get sent to the gpu for an operation
-void createCommandBuffer(){
+void createCommandBuffers(){
+    commandBufferCount = MAX_FRAMES_IN_FLIGHT;
+    commandBuffers = malloc(sizeof(VkCommandBuffer) * commandBufferCount);
+
     VkCommandBufferAllocateInfo allocInfo = {};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = commandPool;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = 1;
+    allocInfo.commandBufferCount = commandBufferCount;
 
-    if(vkAllocateCommandBuffers(logicalDevice, &allocInfo, &commandBuffer) != VK_SUCCESS){
+    if(vkAllocateCommandBuffers(logicalDevice, &allocInfo, commandBuffers) != VK_SUCCESS){
         printf("could not allocate command buffer");
         exit(1);
     }
@@ -181,6 +416,7 @@ void createCommandPool(){
     }
 }
 
+//creates framebuffers for each image in swapchain
 void createFramebuffers(){
     swapChainFrameBuffers = malloc(sizeof(VkFramebuffer) * swapChainImageCount);
 
@@ -205,6 +441,7 @@ void createFramebuffers(){
     }
 }
 
+//creates the render pass object
 void createRenderPass(){
     VkAttachmentDescription colorAttachment = {};
     colorAttachment.format = swapChainImageFormat;
@@ -248,6 +485,8 @@ void createRenderPass(){
     }
 }
 
+//creates a shader module, basically just a thin wrapper
+//over the raw buffer
 VkShaderModule createShaderModule(shaderCode code){
     VkShaderModuleCreateInfo shaderModuleCreateInfo = {};
     shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -262,9 +501,11 @@ VkShaderModule createShaderModule(shaderCode code){
 
     return shaderModule;
 }
+
 //helper to read file into shaderCode buffer
 static shaderCode readFile(const char * filename){
     shaderCode code = {};
+
 
     FILE * fptr;
 
@@ -324,12 +565,15 @@ void createGraphicsPipeline(){
     dynamicState.pDynamicStates = &dynamicStates;
     */
 
+    VkVertexInputBindingDescription vertexBindingDescription = getBindingDescription_Vertex();
+    VkVertexInputAttributeDescription * vertexAttributeDescription = getAttributeDescriptions_Vertex();
+
     VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    vertexInputInfo.vertexBindingDescriptionCount = 0;
-    vertexInputInfo.pVertexBindingDescriptions = NULL;
-    vertexInputInfo.vertexAttributeDescriptionCount = 0;
-    vertexInputInfo.pVertexAttributeDescriptions = NULL;
+    vertexInputInfo.vertexBindingDescriptionCount = 1;
+    vertexInputInfo.pVertexBindingDescriptions = &vertexBindingDescription;
+    vertexInputInfo.vertexAttributeDescriptionCount = 2;
+    vertexInputInfo.pVertexAttributeDescriptions = vertexAttributeDescription;
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -723,6 +967,7 @@ void pickPhysicalDevice(){
     }
 }
 
+//checks if our physical device suppports the extensions we want
 bool checkDeviceExtensionSupport(VkPhysicalDevice device){
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, NULL, &extensionCount, NULL);
@@ -791,6 +1036,7 @@ bool checkValidationLayerSupport(){
         for(int j = 0; j < layerCount; j++){
             if(strcmp(neededLayer, (availableLayers + j)->layerName) == 0){
                 supported = true;
+                break;
             }
         }
     }
@@ -801,9 +1047,6 @@ bool checkValidationLayerSupport(){
 }
 
 //Creates vulkan instance
-//we need a VkApplicationInfo and VkInstanceCreateInfo filled out
-//to create our vulkan instance
-//Mutates -> (global VkInstance) instance
 void createInstance(){
     if(enableValidationLayers && !checkValidationLayerSupport()){
         printf("validation layers requested but not available");
@@ -843,14 +1086,22 @@ void createInstance(){
     }
 }
 
+//sets up glfw and creates a window
 void initWindow(){
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+    glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
 
-    window = glfwCreateWindow(1000,800, "Vulkan", NULL, NULL);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", NULL, NULL);
+    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
+static void framebufferResizeCallback(GLFWwindow * window, int width, int height){
+    framebufferResized = true;
+}
+
+//main 'engine' loop
 void mainLoop(){
     while(!glfwWindowShouldClose(window)){
         glfwPollEvents();
@@ -861,7 +1112,6 @@ void mainLoop(){
 }
 
 //Creates a VkSurfaceKHR
-//Mutates -> (global VkSurfaceKHR) surface
 void createSurface(){
     if(glfwCreateWindowSurface(instance,window,NULL,&surface) != VK_SUCCESS){
         printf("failed to create window surface");
@@ -869,24 +1119,38 @@ void createSurface(){
     }
 }
 
-//cleanup, order matters
-void cleanup(){
-    vkDestroySemaphore(logicalDevice, imageAvailableSemaphore, NULL);
-    vkDestroySemaphore(logicalDevice, renderFinishedSemaphore, NULL);
-    vkDestroyFence(logicalDevice, inFlightFence, NULL);
-    vkDestroyCommandPool(logicalDevice, commandPool, NULL);
+//cleanup swapchain, seperated bc we need to also do this
+//when recreating the swapchain
+void cleanupSwapChain(){
     for(int i = 0; i < swapChainImageCount; i++){
         vkDestroyFramebuffer(logicalDevice, swapChainFrameBuffers[i], NULL);
     }
-    vkDestroyPipeline(logicalDevice, graphicsPipeline, NULL);
-    vkDestroyPipelineLayout(logicalDevice, pipelineLayout, NULL);
-    vkDestroyRenderPass(logicalDevice, renderPass, NULL);
+
     for(int i = 0; i < swapChainImageCount; i++){
         vkDestroyImageView(logicalDevice, swapChainImageViews[i], NULL);
     }
+
     vkDestroySwapchainKHR(logicalDevice, swapChain, NULL);
-    vkDestroySurfaceKHR(instance, surface, NULL);
+}
+
+//cleanup, order matters
+void cleanup(){
+    cleanupSwapChain();
+    vkDestroyBuffer(logicalDevice, vertexBuffer, NULL);
+    vkFreeMemory(logicalDevice, vertexBufferMemory, NULL);
+    vkDestroyBuffer(logicalDevice, indexBuffer, NULL);
+    vkFreeMemory(logicalDevice, indexBufferMemory, NULL);
+    vkDestroyPipeline(logicalDevice, graphicsPipeline, NULL);
+    vkDestroyPipelineLayout(logicalDevice, pipelineLayout, NULL);
+    vkDestroyRenderPass(logicalDevice, renderPass, NULL);
+    for(int i = 0; i < MAX_FRAMES_IN_FLIGHT; i++){
+        vkDestroySemaphore(logicalDevice, imageAvailableSemaphores[i], NULL);
+        vkDestroySemaphore(logicalDevice, renderFinishedSemaphores[i], NULL);
+        vkDestroyFence(logicalDevice, inFlightFences[i], NULL);
+    }
+    vkDestroyCommandPool(logicalDevice, commandPool, NULL);
     vkDestroyDevice(logicalDevice, NULL);
+    vkDestroySurfaceKHR(instance, surface, NULL);
     vkDestroyInstance(instance, NULL);
     glfwDestroyWindow(window);
     glfwTerminate();
@@ -907,9 +1171,12 @@ int main(){
     createGraphicsPipeline();
     createFramebuffers();
     createCommandPool();
-    createCommandBuffer();
+    createVertexBuffer();
+    createIndexBuffer();
+    createCommandBuffers();
     createSyncObjects();
     //loop and cleanup
     mainLoop();
     cleanup();
+    
 }
