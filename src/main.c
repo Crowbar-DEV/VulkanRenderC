@@ -162,7 +162,7 @@ void updateUniformBuffer(uint8_t currentImage){
     vec3 up = {0.0f, 0.0f, 1.0f};
     glm_lookat(eye, center, up, ubo.view);
 
-    glm_perspective(glm_rad(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f, ubo.proj);
+    glm_perspective(glm_rad(60.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f, ubo.proj);
     ubo.proj[1][1] *= -1;
 
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
@@ -350,6 +350,7 @@ VkVertexInputAttributeDescription * getAttributeDescriptions_Vertex(){
 }
 
 void recreateSwapChain(){
+    printf("recreating swap chain");
     int width = 0, height = 0;
     glfwGetFramebufferSize(window, &width, &height);
     while (width == 0 || height == 0) {
@@ -927,8 +928,8 @@ VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities){
     if(capabilities.currentExtent.width != UINT32_MAX){
         return capabilities.currentExtent;
     }else{
-        uint32_t width = 0;
-        uint32_t height = 0;
+        int width = 0;
+        int height = 0;
         glfwGetFramebufferSize(window, &width, &height);
 
         VkExtent2D actualExtent = {
@@ -945,13 +946,7 @@ VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR capabilities){
 
 //queuries details from available swapchain
 SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device){
-    SwapChainSupportDetails details = {
-        NULL,
-        NULL,
-        0,
-        NULL,
-        0
-    };
+    SwapChainSupportDetails details = {};
     
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
 

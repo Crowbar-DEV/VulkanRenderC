@@ -1,6 +1,15 @@
 # VulkanRenderC
-Trying to use vulkan with C, idk why, just bad at C++, using cglm for linear algebra https://github.com/recp/cglm
-Currently Using GLFW for windowing. I am at the vertex buffer part of the vulkan tutorial. But we got a triangle to render, hell yeah!
+Learning vulkan in plain, beautiful(well not my code), C. 
+
+# Build
+Currently I build through vscode on my laptop running arch linux. I need to get around to building for windows 
+and making it easy to build on linux. If you for some reason want to try and build the project, check tasks.json in 
+the .vscode folder to find compiler and linker flags.
+
+## Deps
+cglm - Linear algebra library
+GLFW - windowing library
+Vulkan - rendering
 
 # Docs
 if interested, I made a little shell script to generate
@@ -12,3 +21,7 @@ then run
 bash gendocs.sh
 ```
 documentation will be output to docs/functions docs/structs respectively
+
+# BEWARE
+currently this implementation leaks memory -- I am lazy and dont want to trace object lifetimes. I will
+get around to it eventually but just keep this in mind.
