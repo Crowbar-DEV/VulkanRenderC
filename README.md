@@ -7,9 +7,9 @@ and making it easy to build on linux. If you for some reason want to try and bui
 the .vscode folder to find compiler and linker flags.
 
 ## Deps
-cglm - Linear algebra library\n
-GLFW - windowing library\n
-Vulkan - rendering\n
+cglm - Linear algebra library<br>
+GLFW - windowing library<br>
+Vulkan - rendering<br>
 
 # Docs
 if interested, I made a little shell script to generate
