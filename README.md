@@ -7,9 +7,9 @@ and making it easy to build on linux. If you for some reason want to try and bui
 the .vscode folder to find compiler and linker flags.
 
 ## Deps
-cglm - Linear algebra library
-GLFW - windowing library
-Vulkan - rendering
+cglm - Linear algebra library\n
+GLFW - windowing library\n
+Vulkan - rendering\n
 
 # Docs
 if interested, I made a little shell script to generate
@@ -23,5 +23,6 @@ bash gendocs.sh
 documentation will be output to docs/functions docs/structs respectively
 
 # BEWARE
-currently this implementation leaks memory -- I am lazy and dont want to trace object lifetimes. I will
-get around to it eventually but just keep this in mind.
+currently this implementation leaks memory -- I am lazy and dont want to trace object lifetimes. Vulkan
+Objects are handled appropriately but since C does not have vectors I use flat, heap allocated arrays and 
+forgot to free lots of them(oops). I will get around to it eventually but just keep this in mind.
