@@ -21,6 +21,11 @@ typedef struct Vertex{
     vec3 color;
 }Vertex;
 
+typedef struct UniformBufferObject{
+    mat4 model;
+    mat4 view;
+    mat4 proj;
+}UniformBufferObject;
 
 //struct to hold properties of available swapchain
 typedef struct SwapChainSupportDetails{

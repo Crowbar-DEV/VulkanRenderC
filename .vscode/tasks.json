@@ -15,6 +15,7 @@
                 "/usr/local/include/cglm",
                 "-lvulkan",
                 "-lglfw",
+                "-lm",
                 "-ldl",
                 "-lpthread",
                 "-lX11",
