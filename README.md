@@ -1,5 +1,5 @@
 # VulkanRenderC
-Learning vulkan in plain, beautiful(well not my code), C. 
+Learning vulkan in plain, beautiful(well not my code), C. I am currently working on rewriting this in c++ bc this implementation wont work on windows
 
 # Build
 Currently I build through vscode on my laptop running arch linux. I need to get around to building for windows 
